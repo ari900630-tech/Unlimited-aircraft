@@ -50,7 +50,7 @@ export function GameSplashScreen({ onFinish, durationMs = 4500 }: GameSplashScre
       <div className="relative min-w-full min-h-full aspect-[896/1200] flex items-center justify-center pointer-events-none">
         {/* Exact background with Wings of Israel emblem and LOADING... text */}
         <img
-          src="/src/assets/images/wings_splash_bg.jpg"
+          src={`${import.meta.env.BASE_URL}src/assets/images/wings_splash_bg.jpg`}
           alt="Wings of Israel Splash"
           referrerPolicy="no-referrer"
           className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
@@ -76,7 +76,7 @@ export function GameSplashScreen({ onFinish, durationMs = 4500 }: GameSplashScre
 
           {/* Authentic circular metallic spinner ring rotating smoothly at 60fps */}
           <img
-            src="/src/assets/images/wings_spinner_ring.png"
+            src={`${import.meta.env.BASE_URL}src/assets/images/wings_spinner_ring.png`}
             alt=""
             className="w-full h-full object-contain animate-spin-circle select-none pointer-events-none rounded-full border-0 outline-none"
             style={{
