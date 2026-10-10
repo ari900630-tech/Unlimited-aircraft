@@ -185,18 +185,7 @@ export function GameEntryScreen({
           <section dir="rtl" className="absolute inset-0 overflow-hidden text-white" aria-label="חנות מטוסים">
             <img src={`${import.meta.env.BASE_URL}src/assets/images/wings_entry_runway_1791662090999.jpg`} alt="" className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-b from-slate-950/55 via-sky-950/25 to-slate-950/65" />
-            <header className="absolute top-[1.5%] left-[3%] right-[3%] z-20 flex h-[9%] items-center justify-between gap-2 rounded-2xl border-2 border-slate-300/80 bg-slate-900/80 px-2 shadow-[inset_0_0_12px_rgba(255,255,255,.2),0_4px_12px_rgba(0,0,0,.65)]">
-              <div className="flex shrink-0 flex-col items-start gap-1">
-                <div className="rounded-lg border border-amber-300/60 bg-slate-950/80 px-2 py-1 text-xs font-black text-amber-200">★ רמה 12</div>
-                <button onClick={() => setActiveTab('main')} aria-label="חזור לתפריט" className="rounded-lg border border-slate-300/70 bg-slate-800/95 px-2 py-1 text-xs font-black shadow-lg active:scale-95">↩ חזור</button>
-              </div>
-              <div className="min-w-0 flex-1 text-center">
-                <div className="text-[9px] font-black tracking-[.16em] text-sky-100 sm:text-xs">✦ ═ WINGS OF ISRAEL ═ ✦</div>
-                <div className="text-base font-black leading-tight drop-shadow-md sm:text-lg">חנויות מטוסים</div>
-                <div className="text-[8px] font-bold tracking-[.2em] text-slate-300">ISRAEL AIR FORCE • FLIGHT SYSTEMS</div>
-              </div>
-              <div className="shrink-0 rounded-lg border border-amber-300/60 bg-slate-950/85 px-2 py-2 text-center shadow-inner"><div className="text-[9px] text-sky-100">מטבעות</div><div className="whitespace-nowrap text-xs font-black text-amber-300">🪙 {coins.toLocaleString()} ₪</div></div>
-            </header>
+            {/* Keep the original entry-screen artwork at the top; do not replace it with a new shop header. */}
 
             <div className="absolute left-[12%] right-[12%] top-[15%] bottom-[27%] z-10 overflow-hidden rounded-[28px] border-[5px] border-slate-300/80 bg-slate-800/65 shadow-[inset_0_0_22px_rgba(125,211,252,.25),0_10px_30px_rgba(0,0,0,.65)]">
               <div className="absolute left-[12%] right-[12%] top-[-2%] z-20 rounded-b-2xl border-x-4 border-b-4 border-slate-300/80 bg-gradient-to-b from-slate-600 to-slate-900 px-2 py-2 text-center text-xl font-black shadow-xl">חנות מטוסים</div>
