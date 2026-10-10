@@ -151,7 +151,7 @@ export function GameEntryScreen({
         {activeTab === 'main' && (
           <>
             <img
-              src="/src/assets/images/wings_entry_runway_1791662090999.jpg"
+              src={`${import.meta.env.BASE_URL}src/assets/images/wings_entry_runway_1791662090999.jpg`}
               alt="Wings of Israel Main Menu"
               referrerPolicy="no-referrer"
               className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
