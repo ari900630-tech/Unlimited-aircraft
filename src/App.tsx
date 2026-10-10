@@ -1389,8 +1389,7 @@ function FlightScene({
 
           sfx.playPlaneHit();
           setScore((s) => s + 250);
-          setCoins((c) => c + 2000);
-          onTargetHit?.(`💥 ${p.callsign} הופל! +250 נקודות · +2,000 מטבעות`);
+          onTargetHit?.(`💥 ${p.callsign} הופל! +250 נקודות`);
 
           if (grp) grp.visible = false;
           if (smokeGrp) smokeGrp.visible = false;
