@@ -201,13 +201,15 @@ export function GameEntryScreen({
             <div className="absolute left-[12%] right-[12%] top-[15%] bottom-[27%] z-10 overflow-hidden rounded-[28px] border-[5px] border-slate-300/80 bg-slate-800/65 shadow-[inset_0_0_22px_rgba(125,211,252,.25),0_10px_30px_rgba(0,0,0,.65)]">
               <div className="absolute left-[12%] right-[12%] top-[-2%] z-20 rounded-b-2xl border-x-4 border-b-4 border-slate-300/80 bg-gradient-to-b from-slate-600 to-slate-900 px-2 py-2 text-center text-xl font-black shadow-xl">חנות מטוסים</div>
               <div className="absolute inset-0 bg-gradient-to-b from-sky-200/10 via-slate-900/10 to-slate-950/75" />
-              <div className="absolute left-2 right-2 top-[12%] h-[48%] overflow-hidden rounded-xl border border-slate-300/40 bg-gradient-to-b from-sky-200/30 via-slate-500/10 to-slate-950/70">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_70%,rgba(125,211,252,.22),transparent_65%)]" />
-                <div className="absolute bottom-[8%] left-[10%] right-[10%] h-[15%] rounded-[50%] border-4 border-slate-300/80 bg-gradient-to-b from-slate-300 via-slate-600 to-slate-950 shadow-[0_5px_22px_rgba(0,0,0,.7)]">
-                  <div className="absolute inset-[18%] rounded-[50%] border border-sky-100/60 bg-slate-700/70" />
-                </div>
-                <img src={['https://commons.wikimedia.org/wiki/Special:FilePath/M-346.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-16I_sufa.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-F-35I-Adir.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-2014-Museum_0083-Nesher-1.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-4_Phantom_II.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-15I_Ra%27am.jpg?width=1000'][selectedPlane]} alt={planes[selectedPlane].name} className="absolute inset-0 z-[1] h-full w-full object-contain px-2 pb-[5%] drop-shadow-[0_12px_10px_rgba(0,0,0,.8)]" loading="eager" referrerPolicy="no-referrer" onError={(e)=>{e.currentTarget.style.opacity='0';}} />
-                <div className="absolute bottom-0 left-0 right-0 z-[2] h-[22%] bg-gradient-to-t from-slate-950/75 to-transparent" />
+              <div className="absolute left-2 right-2 top-[12%] h-[48%] overflow-hidden rounded-xl border border-slate-300/40 bg-transparent">
+                <img
+                  src={['https://commons.wikimedia.org/wiki/Special:FilePath/M-346.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-16I_sufa.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-F-35I-Adir.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-2014-Museum_0083-Nesher-1.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-4_Phantom_II.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-15I_Ra%27am.jpg?width=1000'][selectedPlane]}
+                  alt={planes[selectedPlane].name}
+                  className="absolute inset-0 h-full w-full object-contain"
+                  loading="eager"
+                  referrerPolicy="no-referrer"
+                  onError={(e)=>{e.currentTarget.style.opacity='0';}}
+                />
               </div>
               <div className="absolute left-3 right-3 top-[61%] flex items-center justify-between gap-2 border-b border-slate-300/30 pb-1">
                 <div className="min-w-0"><div className="text-[9px] text-sky-200">דגם מטוס</div><h3 className="truncate text-sm font-black drop-shadow sm:text-lg">{planes[selectedPlane].name}</h3></div>
