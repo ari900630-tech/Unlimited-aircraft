@@ -1,0 +1,6 @@
+{
+  "name": "Air Superiority - Flight Combat",
+  "description": "High-fidelity 3D aerial combat and flight simulator game",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
