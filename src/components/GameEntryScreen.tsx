@@ -241,22 +241,13 @@ export function GameEntryScreen({
             <div className="absolute left-[12%] right-[12%] top-[15%] bottom-[27%] z-10 overflow-hidden rounded-[28px] border-[5px] border-slate-300/80 bg-slate-800/65 shadow-[inset_0_0_22px_rgba(125,211,252,.25),0_10px_30px_rgba(0,0,0,.65)]">
               <div className="absolute left-[12%] right-[12%] top-[-2%] z-20 rounded-b-2xl border-x-4 border-b-4 border-slate-300/80 bg-gradient-to-b from-slate-600 to-slate-900 px-2 py-2 text-center text-xl font-black shadow-xl">חנות מטוסים</div>
               <div className="absolute inset-0 bg-gradient-to-b from-sky-200/10 via-slate-900/10 to-slate-950/75" />
-              <div className="absolute left-2 right-2 top-[12%] h-[48%] overflow-hidden rounded-xl bg-gradient-to-b from-sky-300/20 to-slate-900/30">
-                <Canvas camera={{ position: [4.2, 3.1, 5.2], fov: 42 }} dpr={[1, 1.5]}>
-                  <ambientLight intensity={1.35} />
-                  <directionalLight position={[4, 6, 3]} intensity={2.3} />
-                  <pointLight position={[-4, 1, -3]} color="#7DD3FC" intensity={1.5} />
-                  <mesh position={[0, -1.45, 0]} receiveShadow>
-                    <cylinderGeometry args={[1.35, 1.5, 0.18, 48]} />
-                    <meshStandardMaterial color="#64748B" metalness={0.9} roughness={0.22} />
-                  </mesh>
-                  <mesh position={[0, -1.32, 0]}>
-                    <cylinderGeometry args={[1.12, 1.12, 0.08, 48]} />
-                    <meshStandardMaterial color="#CBD5E1" metalness={0.95} roughness={0.18} />
-                  </mesh>
-                  <ShopAircraftModel paint={['#CBD5E1','#C49A64','#9CA3AF','#D6D3D1','#A8A29E','#CBD5E1'][selectedPlane]} />
-                  <OrbitControls enablePan={false} enableZoom={true} minDistance={3.8} maxDistance={8} />
-                </Canvas>
+              <div className="absolute left-2 right-2 top-[12%] h-[48%] overflow-hidden rounded-xl border border-slate-300/40 bg-gradient-to-b from-sky-200/30 via-slate-500/10 to-slate-950/70">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_70%,rgba(125,211,252,.22),transparent_65%)]" />
+                <div className="absolute bottom-[8%] left-[10%] right-[10%] h-[15%] rounded-[50%] border-4 border-slate-300/80 bg-gradient-to-b from-slate-300 via-slate-600 to-slate-950 shadow-[0_5px_22px_rgba(0,0,0,.7)]">
+                  <div className="absolute inset-[18%] rounded-[50%] border border-sky-100/60 bg-slate-700/70" />
+                </div>
+                <img src={['https://commons.wikimedia.org/wiki/Special:FilePath/M-346.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-16I_sufa.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-F-35I-Adir.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/Dassault_Mystere_IV.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-4_Phantom_II.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-15I_Ra%27am.jpg?width=1000'][selectedPlane]} alt={planes[selectedPlane].name} className="absolute inset-0 z-[1] h-full w-full object-contain px-2 pb-[5%] drop-shadow-[0_12px_10px_rgba(0,0,0,.8)]" loading="eager" referrerPolicy="no-referrer" onError={(e)=>{e.currentTarget.style.opacity='0';}} />
+                <div className="absolute bottom-0 left-0 right-0 z-[2] h-[22%] bg-gradient-to-t from-slate-950/75 to-transparent" />
               </div>
               <div className="absolute left-3 right-3 top-[61%] flex items-center justify-between gap-2 border-b border-slate-300/30 pb-1">
                 <div className="min-w-0"><div className="text-[9px] text-sky-200">דגם מטוס</div><h3 className="truncate text-sm font-black drop-shadow sm:text-lg">{planes[selectedPlane].name}</h3></div>
@@ -283,7 +274,7 @@ export function GameEntryScreen({
                 const isOwned=ownedPlanes.includes(idx), isSelected=selectedPlane===idx;
                 return <button type="button" key={p.id} onClick={()=>setSelectedPlane(idx)} className={'relative min-w-[31%] flex-1 snap-center rounded-2xl border-[3px] p-2 text-center shadow-[0_5px_10px_rgba(0,0,0,.55)] transition active:scale-95 '+(isSelected?'border-sky-200 bg-gradient-to-b from-sky-900/95 to-slate-950 ring-2 ring-sky-300/60':'border-slate-400/80 bg-gradient-to-b from-slate-700/95 to-slate-950/95')}>
                   <div className="truncate text-xs font-black">{p.name}</div>
-                  <div className="my-1 flex h-12 items-center justify-center"><div className="h-10 w-full opacity-90"><Canvas camera={{position:[4,3,5],fov:48}} dpr={[1,1]}><ambientLight intensity={1.4}/><directionalLight position={[4,5,3]} intensity={2}/><ShopAircraftModel paint={['#CBD5E1','#C49A64','#9CA3AF','#D6D3D1','#A8A29E','#CBD5E1'][idx]} /></Canvas></div></div>
+                  <div className="my-1 flex h-12 items-center justify-center overflow-hidden rounded-lg bg-slate-950/50"><img src={['https://commons.wikimedia.org/wiki/Special:FilePath/M-346.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/F-16I_sufa.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-F-35I-Adir.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/Dassault_Mystere_IV.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/F-4_Phantom_II.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/F-15I_Ra%27am.jpg?width=400'][idx]} alt={p.name} loading="lazy" referrerPolicy="no-referrer" className="h-full w-full object-contain" /></div>
                   <div className={'text-[10px] font-black '+(isOwned?'text-emerald-300':'text-slate-100')}>{isOwned?'נרכש':'₪ '+p.price.toLocaleString()}</div>
                   {isSelected && <div className="mt-1 text-[10px] font-black text-emerald-300">נבחר</div>}
                 </button>;
