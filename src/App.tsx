@@ -6,7 +6,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Sky, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import { Crosshair, ShieldCheck, Wrench, AlertTriangle, RefreshCw, Menu, Trophy } from 'lucide-react';
+import { Crosshair, ShieldCheck, Wrench, AlertTriangle, RefreshCw, Menu, Trophy, Coins } from 'lucide-react';
 import { FlightErrorBoundary } from './components/FlightErrorBoundary';
 import { DiagnosticReportModal } from './components/DiagnosticReportModal';
 import { GameEntryScreen } from './components/GameEntryScreen';
@@ -1389,7 +1389,8 @@ function FlightScene({
 
           sfx.playPlaneHit();
           setScore((s) => s + 250);
-          onTargetHit?.(`💥 ${p.callsign} התרסק על הקרקע! (+250)`);
+          setCoins((c) => c + 2000);
+          onTargetHit?.(`💥 ${p.callsign} הופל! +250 נקודות · +2,000 מטבעות`);
 
           if (grp) grp.visible = false;
           if (smokeGrp) smokeGrp.visible = false;
@@ -1865,6 +1866,16 @@ export default function App() {
   const isShootingRef = useRef(false);
   const [score, setScore] = useState(0);
   const [aerialHits, setAerialHits] = useState(0);
+  const [coins, setCoins] = useState(() => {
+    try {
+      const saved = localStorage.getItem('unlimited-aircraft-coins');
+      return saved === null ? 10500 : Math.max(0, Number(saved) || 0);
+    } catch { return 10500; }
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem('unlimited-aircraft-coins', String(coins)); } catch { /* local storage unavailable */ }
+  }, [coins]);
   const [hitToast, setHitToast] = useState<{ id: number; text: string } | null>(null);
 
   // Fullscreen hook with double-tap gesture support
@@ -2058,16 +2069,21 @@ export default function App() {
             <DiagnosticHUDButton className="" onOpen={() => setIsDiagnosticsOpen(true)} />
           </div>
 
-          {/* Top Center: Pilot Score & Hits Mobile Badge */}
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 pointer-events-none z-20 hidden xs:flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-slate-950/85 backdrop-blur-md border border-slate-800 text-xs font-mono shadow-md">
+          {/* Top Center: score, kills, and the same persistent shop currency */}
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 pointer-events-none z-20 flex max-w-[58vw] items-center gap-2 sm:gap-3 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-slate-950/90 backdrop-blur-md border border-slate-700 text-[10px] sm:text-xs font-mono shadow-md whitespace-nowrap">
             <div className="flex items-center gap-1 text-amber-400">
-              <Trophy className="w-3.5 h-3.5" />
+              <Trophy className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span>{score.toLocaleString()}</span>
             </div>
             <span className="text-slate-600">|</span>
             <div className="flex items-center gap-1 text-rose-400">
-              <Crosshair className="w-3.5 h-3.5" />
+              <Crosshair className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span>{aerialHits} הפלות</span>
+            </div>
+            <span className="text-slate-600">|</span>
+            <div className="flex items-center gap-1 text-emerald-300">
+              <Coins className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span>₪ {coins.toLocaleString()}</span>
             </div>
           </div>
 
@@ -2163,6 +2179,8 @@ export default function App() {
         onStartFlight={handleTakeoff}
         score={score}
         aerialHits={aerialHits}
+        coins={coins}
+        onCoinsChange={setCoins}
         onOpenDiagnostics={() => setIsDiagnosticsOpen(true)}
       />
 
