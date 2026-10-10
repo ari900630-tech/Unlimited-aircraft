@@ -1,46 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import { User, ArrowRight } from 'lucide-react';
+import { User } from 'lucide-react';
 
-function ShopAircraftModel({ paint }: { paint: string }) {
-  return (
-    <group rotation={[0.12, -0.25, 0]}>
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.22, 0.34, 3.2, 12]} />
-        <meshStandardMaterial color={paint} metalness={0.72} roughness={0.28} />
-      </mesh>
-      <mesh position={[0, 0, -1.85]} rotation={[-Math.PI / 2, 0, 0]}>
-        <coneGeometry args={[0.22, 0.72, 12]} />
-        <meshStandardMaterial color="#CBD5E1" metalness={0.85} roughness={0.18} />
-      </mesh>
-      <mesh position={[0, 0.3, -0.35]}>
-        <sphereGeometry args={[0.3, 16, 10]} />
-        <meshStandardMaterial color="#38BDF8" metalness={0.6} roughness={0.12} transparent opacity={0.78} />
-      </mesh>
-      <mesh position={[0, 0, 0.15]} rotation={[0, 0, Math.PI / 2]}>
-        <boxGeometry args={[0.2, 2.9, 0.08]} />
-        <meshStandardMaterial color={paint} metalness={0.6} roughness={0.32} />
-      </mesh>
-      <mesh position={[0, 0, 1.18]} rotation={[0, 0, Math.PI / 2]}>
-        <boxGeometry args={[0.15, 1.05, 0.07]} />
-        <meshStandardMaterial color="#64748B" metalness={0.65} roughness={0.3} />
-      </mesh>
-      <mesh position={[0, 0.36, 1.05]}>
-        <boxGeometry args={[0.09, 0.75, 0.12]} />
-        <meshStandardMaterial color="#94A3B8" metalness={0.7} roughness={0.25} />
-      </mesh>
-      <mesh position={[-0.42, -0.16, 0.7]}>
-        <boxGeometry args={[0.12, 0.3, 0.72]} />
-        <meshStandardMaterial color="#1E293B" metalness={0.65} roughness={0.3} />
-      </mesh>
-      <mesh position={[0.42, -0.16, 0.7]}>
-        <boxGeometry args={[0.12, 0.3, 0.72]} />
-        <meshStandardMaterial color="#1E293B" metalness={0.65} roughness={0.3} />
-      </mesh>
-    </group>
-  );
-}
 
 interface GameEntryScreenProps {
   isOpen: boolean;
@@ -246,7 +206,7 @@ export function GameEntryScreen({
                 <div className="absolute bottom-[8%] left-[10%] right-[10%] h-[15%] rounded-[50%] border-4 border-slate-300/80 bg-gradient-to-b from-slate-300 via-slate-600 to-slate-950 shadow-[0_5px_22px_rgba(0,0,0,.7)]">
                   <div className="absolute inset-[18%] rounded-[50%] border border-sky-100/60 bg-slate-700/70" />
                 </div>
-                <img src={['https://commons.wikimedia.org/wiki/Special:FilePath/M-346.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-16I_sufa.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-F-35I-Adir.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/Dassault_Mystere_IV.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-4_Phantom_II.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-15I_Ra%27am.jpg?width=1000'][selectedPlane]} alt={planes[selectedPlane].name} className="absolute inset-0 z-[1] h-full w-full object-contain px-2 pb-[5%] drop-shadow-[0_12px_10px_rgba(0,0,0,.8)]" loading="eager" referrerPolicy="no-referrer" onError={(e)=>{e.currentTarget.style.opacity='0';}} />
+                <img src={['https://commons.wikimedia.org/wiki/Special:FilePath/M-346.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-16I_sufa.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-F-35I-Adir.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-2014-Museum_0083-Nesher-1.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-4_Phantom_II.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-15I_Ra%27am.jpg?width=1000'][selectedPlane]} alt={planes[selectedPlane].name} className="absolute inset-0 z-[1] h-full w-full object-contain px-2 pb-[5%] drop-shadow-[0_12px_10px_rgba(0,0,0,.8)]" loading="eager" referrerPolicy="no-referrer" onError={(e)=>{e.currentTarget.style.opacity='0';}} />
                 <div className="absolute bottom-0 left-0 right-0 z-[2] h-[22%] bg-gradient-to-t from-slate-950/75 to-transparent" />
               </div>
               <div className="absolute left-3 right-3 top-[61%] flex items-center justify-between gap-2 border-b border-slate-300/30 pb-1">
@@ -274,7 +234,7 @@ export function GameEntryScreen({
                 const isOwned=ownedPlanes.includes(idx), isSelected=selectedPlane===idx;
                 return <button type="button" key={p.id} onClick={()=>setSelectedPlane(idx)} className={'relative min-w-[31%] flex-1 snap-center rounded-2xl border-[3px] p-2 text-center shadow-[0_5px_10px_rgba(0,0,0,.55)] transition active:scale-95 '+(isSelected?'border-sky-200 bg-gradient-to-b from-sky-900/95 to-slate-950 ring-2 ring-sky-300/60':'border-slate-400/80 bg-gradient-to-b from-slate-700/95 to-slate-950/95')}>
                   <div className="truncate text-xs font-black">{p.name}</div>
-                  <div className="my-1 flex h-12 items-center justify-center overflow-hidden rounded-lg bg-slate-950/50"><img src={['https://commons.wikimedia.org/wiki/Special:FilePath/M-346.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/F-16I_sufa.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-F-35I-Adir.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/Dassault_Mystere_IV.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/F-4_Phantom_II.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/F-15I_Ra%27am.jpg?width=400'][idx]} alt={p.name} loading="lazy" referrerPolicy="no-referrer" className="h-full w-full object-contain" /></div>
+                  <div className="my-1 flex h-12 items-center justify-center overflow-hidden rounded-lg bg-slate-950/50"><img src={['https://commons.wikimedia.org/wiki/Special:FilePath/M-346.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/F-16I_sufa.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-F-35I-Adir.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-2014-Museum_0083-Nesher-1.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/F-4_Phantom_II.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/F-15I_Ra%27am.jpg?width=400'][idx]} alt={p.name} loading="lazy" referrerPolicy="no-referrer" className="h-full w-full object-contain" /></div>
                   <div className={'text-[10px] font-black '+(isOwned?'text-emerald-300':'text-slate-100')}>{isOwned?'נרכש':'₪ '+p.price.toLocaleString()}</div>
                   {isSelected && <div className="mt-1 text-[10px] font-black text-emerald-300">נבחר</div>}
                 </button>;
