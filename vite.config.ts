@@ -28,7 +28,7 @@ function copyAndFixRuntimeImages() {
           const filePath = path.join(directory, entry.name);
           if (entry.isDirectory()) {
             visit(filePath);
-          } else if (/\\.(?:js|css|html|json)$/i.test(entry.name)) {
+          } else if (/\.(?:js|css|html|json)$/i.test(entry.name)) {
             const original = fs.readFileSync(filePath, 'utf8');
             const fixed = original.replaceAll('/src/assets/images/', `${base}src/assets/images/`);
             if (fixed !== original) fs.writeFileSync(filePath, fixed);
