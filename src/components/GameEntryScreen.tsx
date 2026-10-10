@@ -165,10 +165,6 @@ export function GameEntryScreen({
               className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
             />
 
-            {/* Top Bar Coin & Level Display */}
-            <div className="absolute top-3 left-4 text-xs font-bold text-cyan-300 font-mono">רמה 12</div>
-            <div className="absolute top-3 right-4 text-xs font-bold text-amber-400 font-mono">₪ {coins.toLocaleString()}</div>
-
             {/* Back Button */}
             <button
               onClick={() => setActiveTab('main')}
