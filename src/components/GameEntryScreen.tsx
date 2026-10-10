@@ -213,7 +213,7 @@ export function GameEntryScreen({
                   </div>
                   {ownedPlanes.includes(selectedPlane) ? (
                     <button onClick={() => { setEquippedPlane(selectedPlane); setActiveTab('main'); }} className={'mt-5 w-full rounded-xl border px-4 py-3 font-black transition active:scale-[.98] '+(equippedPlane===selectedPlane?'border-emerald-400/40 bg-emerald-500/15 text-emerald-200':'border-cyan-300 bg-cyan-400 text-slate-950 hover:bg-cyan-300')}>
-                      {equippedPlane===selectedPlane ? '✓ המטוס הפעיל שלך' : 'בחר מטוס והתחל לטוס'}
+                      {equippedPlane===selectedPlane ? '✓ המטוס הפעיל שלך' : 'בחר מטוס וחזור לתפריט'}
                     </button>
                   ) : (
                     <button onClick={() => { const plane=planes[selectedPlane]; if(coins<plane.price){alert('אין מספיק מטבעות. נדרשים עוד ₪ '+(plane.price-coins).toLocaleString());return;} setCoins(value=>value-plane.price); setOwnedPlanes(prev=>prev.includes(selectedPlane)?prev:[...prev,selectedPlane]); setEquippedPlane(selectedPlane); }} className="mt-5 w-full rounded-xl border border-cyan-300 bg-cyan-400 px-4 py-3 font-black text-slate-950 hover:bg-cyan-300 active:scale-[.98]">רכישה והפעלה · ₪ {planes[selectedPlane].price.toLocaleString()}</button>
