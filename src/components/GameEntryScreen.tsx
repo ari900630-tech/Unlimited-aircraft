@@ -1,5 +1,46 @@
 import React, { useState, useRef } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 import { User, ArrowRight } from 'lucide-react';
+
+function ShopAircraftModel({ paint }: { paint: string }) {
+  return (
+    <group rotation={[0.12, -0.25, 0]}>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.22, 0.34, 3.2, 12]} />
+        <meshStandardMaterial color={paint} metalness={0.72} roughness={0.28} />
+      </mesh>
+      <mesh position={[0, 0, -1.85]} rotation={[-Math.PI / 2, 0, 0]}>
+        <coneGeometry args={[0.22, 0.72, 12]} />
+        <meshStandardMaterial color="#CBD5E1" metalness={0.85} roughness={0.18} />
+      </mesh>
+      <mesh position={[0, 0.3, -0.35]}>
+        <sphereGeometry args={[0.3, 16, 10]} />
+        <meshStandardMaterial color="#38BDF8" metalness={0.6} roughness={0.12} transparent opacity={0.78} />
+      </mesh>
+      <mesh position={[0, 0, 0.15]} rotation={[0, 0, Math.PI / 2]}>
+        <boxGeometry args={[0.2, 2.9, 0.08]} />
+        <meshStandardMaterial color={paint} metalness={0.6} roughness={0.32} />
+      </mesh>
+      <mesh position={[0, 0, 1.18]} rotation={[0, 0, Math.PI / 2]}>
+        <boxGeometry args={[0.15, 1.05, 0.07]} />
+        <meshStandardMaterial color="#64748B" metalness={0.65} roughness={0.3} />
+      </mesh>
+      <mesh position={[0, 0.36, 1.05]}>
+        <boxGeometry args={[0.09, 0.75, 0.12]} />
+        <meshStandardMaterial color="#94A3B8" metalness={0.7} roughness={0.25} />
+      </mesh>
+      <mesh position={[-0.42, -0.16, 0.7]}>
+        <boxGeometry args={[0.12, 0.3, 0.72]} />
+        <meshStandardMaterial color="#1E293B" metalness={0.65} roughness={0.3} />
+      </mesh>
+      <mesh position={[0.42, -0.16, 0.7]}>
+        <boxGeometry args={[0.12, 0.3, 0.72]} />
+        <meshStandardMaterial color="#1E293B" metalness={0.65} roughness={0.3} />
+      </mesh>
+    </group>
+  );
+}
 
 interface GameEntryScreenProps {
   isOpen: boolean;
@@ -193,19 +234,14 @@ export function GameEntryScreen({
               <div className="grid grid-cols-1 sm:grid-cols-[1.15fr_.85fr] gap-4">
                 <div className="min-w-0 rounded-2xl border border-cyan-500/30 bg-slate-900/80 p-4 shadow-[0_0_35px_rgba(8,145,178,.08)]">
                   <div className="flex items-center justify-between"><span className="text-xs tracking-widest text-cyan-300">AIRCRAFT PREVIEW</span><span className="rounded-full border border-emerald-400/40 px-2 py-1 text-[10px] text-emerald-300">{ownedPlanes.includes(selectedPlane) ? 'בבעלותך' : 'זמין לרכישה'}</span></div>
-                  <div className="my-3 flex h-36 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-b from-slate-800 to-slate-950">
-                    <svg viewBox="0 0 420 180" className="h-full w-full max-w-lg" role="img" aria-label={'תצוגת מטוס ' + planes[selectedPlane].name}>
-                      <defs><linearGradient id="planeMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor={['#94A3B8','#60A5FA','#67E8F9','#D6D3D1','#A8A29E','#CBD5E1'][selectedPlane]}/><stop offset="100%" stopColor="#1E293B"/></linearGradient></defs>
-                      <ellipse cx="210" cy="137" rx="135" ry="10" fill="#020617" opacity=".7"/>
-                      <g transform="translate(210 88) rotate(-8)">
-                        <path d="M-150 8 L-48 -7 L-17 -54 L8 -54 L1 -7 L111 -20 L153 -9 L111 3 L1 4 L14 48 L-8 48 L-48 4 Z" fill="url(#planeMetal)" stroke="#E2E8F0" strokeOpacity=".7" strokeWidth="2"/>
-                        <path d="M-28 -7 L-5 -20 L33 -16 L47 -7 Z" fill="#38BDF8" opacity=".9"/>
-                        <path d="M-135 8 L-80 0 L-70 7 Z" fill="#F8FAFC" opacity=".75"/>
-                        <path d="M-5 4 L-32 29 L-17 31 L16 5 Z" fill="#475569"/>
-                        <path d="M-5 -7 L-32 -29 L-17 -31 L16 -8 Z" fill="#64748B"/>
-                      </g>
-                      <text x="210" y="164" fill="#67E8F9" textAnchor="middle" fontSize="10" letterSpacing="3">3D AIRCRAFT DISPLAY</text>
-                    </svg>
+                  <div className="my-3 h-36 overflow-hidden rounded-xl bg-gradient-to-b from-slate-800 to-slate-950">
+                    <Canvas camera={{ position: [4.2, 3.1, 5.2], fov: 42 }} dpr={[1, 1.5]}>
+                      <ambientLight intensity={1.1} />
+                      <directionalLight position={[4, 6, 3]} intensity={2.1} />
+                      <pointLight position={[-4, 1, -3]} color="#22D3EE" intensity={1.2} />
+                      <ShopAircraftModel paint={['#94A3B8','#60A5FA','#67E8F9','#D6D3D1','#A8A29E','#CBD5E1'][selectedPlane]} />
+                      <OrbitControls enablePan={false} enableZoom={true} minDistance={3.8} maxDistance={8} />
+                    </Canvas>
                   </div>
                   <div className="flex items-start justify-between gap-3"><div><h3 className="text-xl font-black">{planes[selectedPlane].name}</h3><p className="mt-1 text-xs text-slate-400">מטוס #{String(selectedPlane + 1).padStart(2,'0')} · סימולטור טיסה</p></div><div className="text-left"><div className="text-xs text-slate-400">מחיר</div><div className="text-lg font-black text-amber-300">₪ {planes[selectedPlane].price.toLocaleString()}</div></div></div>
                   <div className="mt-4 space-y-3">
