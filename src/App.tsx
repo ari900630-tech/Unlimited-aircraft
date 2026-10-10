@@ -1739,8 +1739,8 @@ function FlightScene({
       <DetailedAirplane
         ref={airplaneRef}
         propellerRef={propellerRef}
-        color="#E11D48"
-        wingtipColor="#991B1B"
+        color={planePaint.body}
+        wingtipColor={planePaint.wing}
         isFlying={isFlying}
       />
 
@@ -1847,6 +1847,16 @@ export default function App() {
   const [isSplashScreenOpen, setIsSplashScreenOpen] = useState(true);
   const [isFlying, setIsFlying] = useState(false);
   const [isEntryScreenOpen, setIsEntryScreenOpen] = useState(true);
+  const [activePlaneId, setActivePlaneId] = useState(0);
+  const handlePlaneSelected = React.useCallback((planeId: number) => setActivePlaneId(planeId), []);
+  const planePaint = [
+    { body: '#E11D48', wing: '#991B1B' },
+    { body: '#64748B', wing: '#334155' },
+    { body: '#0F172A', wing: '#38BDF8' },
+    { body: '#D6D3D1', wing: '#78716C' },
+    { body: '#78716C', wing: '#44403C' },
+    { body: '#475569', wing: '#0F172A' },
+  ][Math.max(0, Math.min(5, activePlaneId))];
   const [cameraMode] = useState<'chase' | 'cockpit' | 'free'>('chase');
   const turnInputRef = useRef(0);
   const pitchInputRef = useRef(0);
@@ -2146,6 +2156,7 @@ export default function App() {
       {/* Modern App-Style Game Entry & Mission Briefing Screen */}
       <GameEntryScreen
         isOpen={isEntryScreenOpen}
+        onPlaneSelected={handlePlaneSelected}
         onStartFlight={handleTakeoff}
         score={score}
         aerialHits={aerialHits}
