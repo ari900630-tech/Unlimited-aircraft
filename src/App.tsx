@@ -977,8 +977,10 @@ function FlightScene({
   setAerialHits,
   onTargetHit,
   selfHealTrigger,
+  planePaint,
 }: {
   isFlying: boolean;
+  planePaint: { body: string; wing: string };
   turnInputRef: React.MutableRefObject<number>;
   pitchInputRef: React.MutableRefObject<number>;
   isShootingRef: React.MutableRefObject<boolean>;
@@ -1995,6 +1997,7 @@ export default function App() {
             pitchInputRef={pitchInputRef}
             isShootingRef={isShootingRef}
             cameraMode={cameraMode}
+            planePaint={planePaint}
             setScore={setScore}
             setAerialHits={setAerialHits}
             onTargetHit={handleTargetHit}
