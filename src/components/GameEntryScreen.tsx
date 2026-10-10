@@ -11,6 +11,8 @@ interface GameEntryScreenProps {
   onPlaneSelected?: (planeId: number) => void;
   isFullscreen?: boolean;
   onToggleFullscreen?: () => void;
+  coins: number;
+  onCoinsChange: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export function GameEntryScreen({
@@ -18,12 +20,11 @@ export function GameEntryScreen({
   onStartFlight,
   onOpenDiagnostics,
   onPlaneSelected,
+  coins,
+  onCoinsChange,
 }: GameEntryScreenProps) {
   const [activeTab, setActiveTab] = useState<'main' | 'shop' | 'upgrades' | 'profile'>('main');
   const [isPlayPressed, setIsPlayPressed] = useState(false);
-  const [coins, setCoins] = useState(() => {
-    try { const saved = localStorage.getItem('unlimited-aircraft-coins'); return saved === null ? 10500 : Math.max(0, Number(saved) || 0); } catch { return 10500; }
-  });
   const [selectedPlane, setSelectedPlane] = useState(() => {
     try { return Math.max(0, Math.min(5, Number(localStorage.getItem('unlimited-aircraft-selected') || 0))); } catch { return 0; }
   });
@@ -36,7 +37,6 @@ export function GameEntryScreen({
 
   React.useEffect(() => {
     try {
-      localStorage.setItem('unlimited-aircraft-coins', String(coins));
       localStorage.setItem('unlimited-aircraft-selected', String(selectedPlane));
       localStorage.setItem('unlimited-aircraft-owned', JSON.stringify(ownedPlanes));
       localStorage.setItem('unlimited-aircraft-equipped', String(equippedPlane));
@@ -216,7 +216,7 @@ export function GameEntryScreen({
               {ownedPlanes.includes(selectedPlane) ? (
                 <button onClick={() => { setEquippedPlane(selectedPlane); setActiveTab('main'); }} className="w-full rounded-2xl border-[4px] border-slate-200 bg-gradient-to-b from-slate-500 via-slate-700 to-slate-900 px-3 py-3 text-lg font-black shadow-[0_5px_0_#111827,0_0_18px_rgba(125,211,252,.35)] active:translate-y-1">{equippedPlane===selectedPlane?'✓ המטוס הפעיל שלך':'בחר מטוס'}</button>
               ) : (
-                <button onClick={() => { const plane=planes[selectedPlane]; if(coins<plane.price){alert('אין מספיק מטבעות. נדרשים עוד ₪ '+(plane.price-coins).toLocaleString());return;} setCoins(value=>value-plane.price); setOwnedPlanes(prev=>prev.includes(selectedPlane)?prev:[...prev,selectedPlane]); setEquippedPlane(selectedPlane); }} className="w-full rounded-2xl border-[4px] border-slate-200 bg-gradient-to-b from-slate-500 via-slate-700 to-slate-900 px-3 py-3 text-xl font-black text-white shadow-[0_5px_0_#111827,0_0_18px_rgba(125,211,252,.35)] active:translate-y-1">קנה · ₪ {planes[selectedPlane].price.toLocaleString()}</button>
+                <button onClick={() => { const plane=planes[selectedPlane]; if(coins<plane.price){alert('אין מספיק מטבעות. נדרשים עוד ₪ '+(plane.price-coins).toLocaleString());return;} onCoinsChange(value=>value-plane.price); setOwnedPlanes(prev=>prev.includes(selectedPlane)?prev:[...prev,selectedPlane]); setEquippedPlane(selectedPlane); }} className="w-full rounded-2xl border-[4px] border-slate-200 bg-gradient-to-b from-slate-500 via-slate-700 to-slate-900 px-3 py-3 text-xl font-black text-white shadow-[0_5px_0_#111827,0_0_18px_rgba(125,211,252,.35)] active:translate-y-1">קנה · ₪ {planes[selectedPlane].price.toLocaleString()}</button>
               )}
             </div>
 
@@ -264,7 +264,7 @@ export function GameEntryScreen({
               onClick={() => {
                 const totalCost = 5000;
                 if (coins >= totalCost) {
-                  setCoins((c) => c - totalCost);
+                  onCoinsChange((c) => c - totalCost);
                   setUpgrades({ engine: 5, avionics: 4, weapons: 3, armor: 5 });
                 } else {
                   alert('אין מספיק מטבעות לשדרוג כולל!');
@@ -281,7 +281,7 @@ export function GameEntryScreen({
               onClick={() => {
                 const cost = 5000;
                 if (upgrades.engine < 5 && coins >= cost) {
-                  setCoins((c) => c - cost);
+                  onCoinsChange((c) => c - cost);
                   setUpgrades((prev) => ({ ...prev, engine: prev.engine + 1 }));
                 }
               }}
@@ -294,7 +294,7 @@ export function GameEntryScreen({
               onClick={() => {
                 const cost = 3500;
                 if (upgrades.avionics < 4 && coins >= cost) {
-                  setCoins((c) => c - cost);
+                  onCoinsChange((c) => c - cost);
                   setUpgrades((prev) => ({ ...prev, avionics: prev.avionics + 1 }));
                 }
               }}
@@ -307,7 +307,7 @@ export function GameEntryScreen({
               onClick={() => {
                 const cost = 7500;
                 if (upgrades.weapons < 3 && coins >= cost) {
-                  setCoins((c) => c - cost);
+                  onCoinsChange((c) => c - cost);
                   setUpgrades((prev) => ({ ...prev, weapons: prev.weapons + 1 }));
                 }
               }}
@@ -320,7 +320,7 @@ export function GameEntryScreen({
               onClick={() => {
                 const cost = 4200;
                 if (upgrades.armor < 5 && coins >= cost) {
-                  setCoins((c) => c - cost);
+                  onCoinsChange((c) => c - cost);
                   setUpgrades((prev) => ({ ...prev, armor: prev.armor + 1 }));
                 }
               }}
