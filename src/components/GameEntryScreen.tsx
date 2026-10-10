@@ -222,55 +222,54 @@ export function GameEntryScreen({
             2. AIRCRAFT SHOP SCREEN (חנות מטוסים עם גלילה מלאה)
            ========================================== */}
         {activeTab === 'shop' && (
-          <section className="absolute inset-0 overflow-y-auto bg-[#070D19] text-white px-4 pt-5 pb-4 sm:px-8" aria-label="חנות מטוסים">
-            <div className="absolute inset-0 pointer-events-none opacity-40" style={{backgroundImage:'radial-gradient(ellipse at 50% 20%, rgba(8,145,178,.24), transparent 55%), linear-gradient(145deg, transparent 55%, rgba(30,64,175,.12))'}} />
-            <div className="relative z-10 mx-auto w-full max-w-3xl">
-              <header className="flex items-center justify-between gap-3 mb-5">
-                <button onClick={() => setActiveTab('main')} aria-label="חזרה לתפריט" className="rounded-xl border border-cyan-400/40 bg-slate-900 px-4 py-2 text-sm font-bold text-cyan-100 hover:bg-cyan-950 active:scale-95">← חזרה</button>
-                <div className="text-right"><div className="text-[11px] tracking-[.25em] text-cyan-300">AIRCRAFT COMMAND</div><h2 className="text-2xl font-black">חנות המטוסים</h2></div>
-                <div className="rounded-xl border border-amber-400/40 bg-slate-900 px-3 py-2 text-right"><div className="text-[10px] text-amber-300">יתרת מטבעות</div><div className="font-black text-amber-200">₪ {coins.toLocaleString()}</div></div>
-              </header>
+          <section dir="rtl" className="absolute inset-0 overflow-hidden text-white" aria-label="חנות מטוסים">
+            <img src={`${import.meta.env.BASE_URL}src/assets/images/wings_entry_runway_1791662090999.jpg`} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/55 via-sky-950/25 to-slate-950/65" />
+            <header className="absolute top-[2%] left-[3%] right-[3%] z-20 flex h-[7%] items-center justify-between rounded-2xl border-2 border-slate-300/70 bg-slate-900/75 px-3 shadow-[inset_0_0_12px_rgba(255,255,255,.18),0_4px_12px_rgba(0,0,0,.6)]">
+              <button onClick={() => setActiveTab('main')} aria-label="חזרה לתפריט" className="rounded-xl border-2 border-slate-300/70 bg-slate-800/90 px-3 py-2 font-black shadow-lg active:scale-95">↩ חזור</button>
+              <div className="text-center"><div className="text-[10px] font-bold tracking-[.2em] text-sky-200">WINGS OF ISRAEL</div><div className="text-lg font-black drop-shadow-md">חנות מטוסים</div></div>
+              <div className="rounded-xl border border-slate-300/60 bg-slate-800/90 px-3 py-2 text-center"><div className="text-[10px] text-sky-200">יתרה</div><div className="font-black text-amber-300">₪ {coins.toLocaleString()}</div></div>
+            </header>
 
-              <div className="grid grid-cols-1 sm:grid-cols-[1.15fr_.85fr] gap-4">
-                <div className="min-w-0 rounded-2xl border border-cyan-500/30 bg-slate-900/80 p-4 shadow-[0_0_35px_rgba(8,145,178,.08)]">
-                  <div className="flex items-center justify-between"><span className="text-xs tracking-widest text-cyan-300">AIRCRAFT PREVIEW</span><span className="rounded-full border border-emerald-400/40 px-2 py-1 text-[10px] text-emerald-300">{ownedPlanes.includes(selectedPlane) ? 'בבעלותך' : 'זמין לרכישה'}</span></div>
-                  <div className="my-3 h-36 overflow-hidden rounded-xl bg-gradient-to-b from-slate-800 to-slate-950">
-                    <Canvas camera={{ position: [4.2, 3.1, 5.2], fov: 42 }} dpr={[1, 1.5]}>
-                      <ambientLight intensity={1.1} />
-                      <directionalLight position={[4, 6, 3]} intensity={2.1} />
-                      <pointLight position={[-4, 1, -3]} color="#22D3EE" intensity={1.2} />
-                      <ShopAircraftModel paint={['#94A3B8','#60A5FA','#67E8F9','#D6D3D1','#A8A29E','#CBD5E1'][selectedPlane]} />
-                      <OrbitControls enablePan={false} enableZoom={true} minDistance={3.8} maxDistance={8} />
-                    </Canvas>
-                  </div>
-                  <div className="flex items-start justify-between gap-3"><div><h3 className="text-xl font-black">{planes[selectedPlane].name}</h3><p className="mt-1 text-xs text-slate-400">מטוס #{String(selectedPlane + 1).padStart(2,'0')} · סימולטור טיסה</p></div><div className="text-left"><div className="text-xs text-slate-400">מחיר</div><div className="text-lg font-black text-amber-300">₪ {planes[selectedPlane].price.toLocaleString()}</div></div></div>
-                  <div className="mt-4 space-y-3">
-                    {([{label:'מהירות',value:planes[selectedPlane].speed},{label:'תמרון',value:planes[selectedPlane].maneuver},{label:'חימוש',value:planes[selectedPlane].fire}] as const).map(stat => <div key={stat.label}><div className="mb-1 flex justify-between text-xs"><span className="text-slate-300">{stat.label}</span><span className="font-mono text-cyan-200">{stat.value}/100</span></div><div className="h-1.5 overflow-hidden rounded-full bg-slate-700"><div className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-sky-300" style={{width:stat.value+'%'}}/></div></div>)}
-                  </div>
-                  {ownedPlanes.includes(selectedPlane) ? (
-                    <button onClick={() => { setEquippedPlane(selectedPlane); setActiveTab('main'); }} className={'mt-5 w-full rounded-xl border px-4 py-3 font-black transition active:scale-[.98] '+(equippedPlane===selectedPlane?'border-emerald-400/40 bg-emerald-500/15 text-emerald-200':'border-cyan-300 bg-cyan-400 text-slate-950 hover:bg-cyan-300')}>
-                      {equippedPlane===selectedPlane ? '✓ המטוס הפעיל שלך' : 'בחר מטוס וחזור לתפריט'}
-                    </button>
-                  ) : (
-                    <button onClick={() => { const plane=planes[selectedPlane]; if(coins<plane.price){alert('אין מספיק מטבעות. נדרשים עוד ₪ '+(plane.price-coins).toLocaleString());return;} setCoins(value=>value-plane.price); setOwnedPlanes(prev=>prev.includes(selectedPlane)?prev:[...prev,selectedPlane]); setEquippedPlane(selectedPlane); }} className="mt-5 w-full rounded-xl border border-cyan-300 bg-cyan-400 px-4 py-3 font-black text-slate-950 hover:bg-cyan-300 active:scale-[.98]">רכישה והפעלה · ₪ {planes[selectedPlane].price.toLocaleString()}</button>
-                  )}
-                  {equippedPlane===selectedPlane && <p className="mt-2 text-center text-xs text-emerald-300">המטוס הזה יופיע בטיסה הבאה שלך.</p>}
-                </div>
-
-                <div className="min-w-0">
-                  <div className="mb-2 flex items-center justify-between"><h3 className="font-bold">צי המטוסים</h3><span className="text-xs text-slate-400">{ownedPlanes.length} / {planes.length} בבעלות</span></div>
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-1">
-                    {planes.map((p,idx) => {
-                      const isOwned=ownedPlanes.includes(idx), isSelected=selectedPlane===idx, isEquipped=equippedPlane===idx;
-                      return <button type="button" key={p.id} onClick={()=>setSelectedPlane(idx)} className={'w-full rounded-xl border p-3 text-right transition active:scale-[.98] '+(isSelected?'border-cyan-300 bg-cyan-950/80 shadow-[0_0_18px_rgba(34,211,238,.12)]':'border-slate-700 bg-slate-900/80 hover:border-slate-500')}>
-                        <div className="flex items-center justify-between gap-2"><span className="font-bold text-sm">{p.name}</span>{isEquipped?<span className="text-[10px] text-emerald-300">פעיל</span>:isOwned?<span className="text-[10px] text-cyan-300">בבעלות</span>:<span className="text-[10px] text-amber-300">לרכישה</span>}</div>
-                        <div className="mt-2 flex items-center justify-between text-xs"><span className="text-slate-400">מהירות {p.speed}</span><span className={isOwned?'text-emerald-300':'text-amber-300'}>{isOwned?'נרכש':'₪ '+p.price.toLocaleString()}</span></div>
-                      </button>;
-                    })}
-                  </div>
-                  <div className="mt-3 rounded-xl border border-slate-700/80 bg-slate-900/60 p-3 text-xs leading-5 text-slate-400">הרכישות והמטבעות נשמרים במכשיר שלך. בחר מטוס בבעלותך כדי להפעיל אותו, או רכוש מטוס חדש אם יש מספיק מטבעות.</div>
-                </div>
+            <div className="absolute left-[12%] right-[12%] top-[15%] bottom-[27%] z-10 overflow-hidden rounded-[28px] border-[5px] border-slate-300/80 bg-slate-800/65 shadow-[inset_0_0_22px_rgba(125,211,252,.25),0_10px_30px_rgba(0,0,0,.65)]">
+              <div className="absolute left-[12%] right-[12%] top-[-2%] z-20 rounded-b-2xl border-x-4 border-b-4 border-slate-300/80 bg-gradient-to-b from-slate-600 to-slate-900 px-2 py-2 text-center text-xl font-black shadow-xl">חנות מטוסים</div>
+              <div className="absolute inset-0 bg-gradient-to-b from-sky-200/10 via-slate-900/10 to-slate-950/75" />
+              <div className="absolute left-2 right-2 top-[12%] h-[48%] overflow-hidden rounded-xl bg-gradient-to-b from-sky-300/20 to-slate-900/30">
+                <Canvas camera={{ position: [4.2, 3.1, 5.2], fov: 42 }} dpr={[1, 1.5]}>
+                  <ambientLight intensity={1.35} />
+                  <directionalLight position={[4, 6, 3]} intensity={2.3} />
+                  <pointLight position={[-4, 1, -3]} color="#7DD3FC" intensity={1.5} />
+                  <ShopAircraftModel paint={['#CBD5E1','#C49A64','#9CA3AF','#D6D3D1','#A8A29E','#CBD5E1'][selectedPlane]} />
+                  <OrbitControls enablePan={false} enableZoom={true} minDistance={3.8} maxDistance={8} />
+                </Canvas>
               </div>
+              <div className="absolute left-3 right-3 top-[61%] flex items-center justify-between gap-2 border-b border-slate-300/30 pb-2">
+                <div className="min-w-0"><div className="text-[10px] text-sky-200">מטוס נבחר</div><h3 className="truncate text-lg font-black drop-shadow">{planes[selectedPlane].name}</h3></div>
+                <div className="shrink-0 text-left"><div className="text-[10px] text-slate-200">מחיר</div><div className="text-lg font-black text-amber-300">₪ {planes[selectedPlane].price.toLocaleString()}</div></div>
+              </div>
+              <div className="absolute left-3 right-3 top-[72%] space-y-2">
+                {([{label:'מהירות',value:planes[selectedPlane].speed},{label:'תמרון',value:planes[selectedPlane].maneuver},{label:'כוח אש',value:planes[selectedPlane].fire}] as const).map(stat => <div key={stat.label} className="flex items-center gap-2"><span className="w-16 shrink-0 text-xs font-bold text-slate-100">{stat.label}</span><div className="h-3 flex-1 overflow-hidden rounded-sm border border-slate-300/60 bg-slate-950/80"><div className="h-full bg-gradient-to-r from-sky-300 via-cyan-200 to-slate-100 shadow-[0_0_8px_rgba(125,211,252,.7)]" style={{width:stat.value+'%'}} /></div><span className="w-7 text-left text-[10px] text-sky-100">{stat.value}</span></div>)}
+              </div>
+            </div>
+
+            <div className="absolute bottom-[17%] left-1/2 z-30 w-[62%] -translate-x-1/2">
+              {ownedPlanes.includes(selectedPlane) ? (
+                <button onClick={() => { setEquippedPlane(selectedPlane); setActiveTab('main'); }} className="w-full rounded-2xl border-[4px] border-slate-200 bg-gradient-to-b from-slate-500 via-slate-700 to-slate-900 px-3 py-3 text-lg font-black shadow-[0_5px_0_#111827,0_0_18px_rgba(125,211,252,.35)] active:translate-y-1">{equippedPlane===selectedPlane?'✓ המטוס הפעיל שלך':'בחר מטוס'}</button>
+              ) : (
+                <button onClick={() => { const plane=planes[selectedPlane]; if(coins<plane.price){alert('אין מספיק מטבעות. נדרשים עוד ₪ '+(plane.price-coins).toLocaleString());return;} setCoins(value=>value-plane.price); setOwnedPlanes(prev=>prev.includes(selectedPlane)?prev:[...prev,selectedPlane]); setEquippedPlane(selectedPlane); }} className="w-full rounded-2xl border-[4px] border-slate-200 bg-gradient-to-b from-slate-500 via-slate-700 to-slate-900 px-3 py-3 text-xl font-black text-white shadow-[0_5px_0_#111827,0_0_18px_rgba(125,211,252,.35)] active:translate-y-1">קנה · ₪ {planes[selectedPlane].price.toLocaleString()}</button>
+              )}
+            </div>
+
+            <div className="absolute bottom-[2%] left-0 right-0 z-20 flex gap-2 overflow-x-auto px-3 pb-1 snap-x">
+              {planes.map((p,idx) => {
+                const isOwned=ownedPlanes.includes(idx), isSelected=selectedPlane===idx;
+                return <button type="button" key={p.id} onClick={()=>setSelectedPlane(idx)} className={'relative min-w-[31%] flex-1 snap-center rounded-2xl border-[3px] p-2 text-center shadow-[0_5px_10px_rgba(0,0,0,.55)] transition active:scale-95 '+(isSelected?'border-sky-200 bg-gradient-to-b from-sky-900/95 to-slate-950 ring-2 ring-sky-300/60':'border-slate-400/80 bg-gradient-to-b from-slate-700/95 to-slate-950/95')}>
+                  <div className="truncate text-xs font-black">{p.name}</div>
+                  <div className="my-1 flex h-12 items-center justify-center"><div className="h-10 w-full opacity-90"><Canvas camera={{position:[4,3,5],fov:48}} dpr={[1,1]}><ambientLight intensity={1.4}/><directionalLight position={[4,5,3]} intensity={2}/><ShopAircraftModel paint={['#CBD5E1','#C49A64','#9CA3AF','#D6D3D1','#A8A29E','#CBD5E1'][idx]} /></Canvas></div></div>
+                  <div className={'text-[10px] font-black '+(isOwned?'text-emerald-300':'text-slate-100')}>{isOwned?'נרכש':'₪ '+p.price.toLocaleString()}</div>
+                  {isSelected && <div className="mt-1 text-[10px] font-black text-emerald-300">נבחר</div>}
+                </button>;
+              })}
             </div>
           </section>
         )}
