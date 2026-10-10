@@ -225,10 +225,17 @@ export function GameEntryScreen({
           <section dir="rtl" className="absolute inset-0 overflow-hidden text-white" aria-label="חנות מטוסים">
             <img src={`${import.meta.env.BASE_URL}src/assets/images/wings_entry_runway_1791662090999.jpg`} alt="" className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-b from-slate-950/55 via-sky-950/25 to-slate-950/65" />
-            <header className="absolute top-[2%] left-[3%] right-[3%] z-20 flex h-[7%] items-center justify-between rounded-2xl border-2 border-slate-300/70 bg-slate-900/75 px-3 shadow-[inset_0_0_12px_rgba(255,255,255,.18),0_4px_12px_rgba(0,0,0,.6)]">
-              <button onClick={() => setActiveTab('main')} aria-label="חזרה לתפריט" className="rounded-xl border-2 border-slate-300/70 bg-slate-800/90 px-3 py-2 font-black shadow-lg active:scale-95">↩ חזור</button>
-              <div className="text-center"><div className="text-[10px] font-bold tracking-[.2em] text-sky-200">WINGS OF ISRAEL</div><div className="text-lg font-black drop-shadow-md">חנות מטוסים</div></div>
-              <div className="rounded-xl border border-slate-300/60 bg-slate-800/90 px-3 py-2 text-center"><div className="text-[10px] text-sky-200">יתרה</div><div className="font-black text-amber-300">₪ {coins.toLocaleString()}</div></div>
+            <header className="absolute top-[1.5%] left-[3%] right-[3%] z-20 flex h-[9%] items-center justify-between gap-2 rounded-2xl border-2 border-slate-300/80 bg-slate-900/80 px-2 shadow-[inset_0_0_12px_rgba(255,255,255,.2),0_4px_12px_rgba(0,0,0,.65)]">
+              <div className="flex shrink-0 flex-col items-start gap-1">
+                <div className="rounded-lg border border-amber-300/60 bg-slate-950/80 px-2 py-1 text-xs font-black text-amber-200">★ רמה 12</div>
+                <button onClick={() => setActiveTab('main')} aria-label="חזור לתפריט" className="rounded-lg border border-slate-300/70 bg-slate-800/95 px-2 py-1 text-xs font-black shadow-lg active:scale-95">↩ חזור</button>
+              </div>
+              <div className="min-w-0 flex-1 text-center">
+                <div className="text-[9px] font-black tracking-[.16em] text-sky-100 sm:text-xs">✦ ═ WINGS OF ISRAEL ═ ✦</div>
+                <div className="text-base font-black leading-tight drop-shadow-md sm:text-lg">חנויות מטוסים</div>
+                <div className="text-[8px] font-bold tracking-[.2em] text-slate-300">ISRAEL AIR FORCE • FLIGHT SYSTEMS</div>
+              </div>
+              <div className="shrink-0 rounded-lg border border-amber-300/60 bg-slate-950/85 px-2 py-2 text-center shadow-inner"><div className="text-[9px] text-sky-100">מטבעות</div><div className="whitespace-nowrap text-xs font-black text-amber-300">🪙 {coins.toLocaleString()} ₪</div></div>
             </header>
 
             <div className="absolute left-[12%] right-[12%] top-[15%] bottom-[27%] z-10 overflow-hidden rounded-[28px] border-[5px] border-slate-300/80 bg-slate-800/65 shadow-[inset_0_0_22px_rgba(125,211,252,.25),0_10px_30px_rgba(0,0,0,.65)]">
@@ -239,16 +246,27 @@ export function GameEntryScreen({
                   <ambientLight intensity={1.35} />
                   <directionalLight position={[4, 6, 3]} intensity={2.3} />
                   <pointLight position={[-4, 1, -3]} color="#7DD3FC" intensity={1.5} />
+                  <mesh position={[0, -1.45, 0]} receiveShadow>
+                    <cylinderGeometry args={[1.35, 1.5, 0.18, 48]} />
+                    <meshStandardMaterial color="#64748B" metalness={0.9} roughness={0.22} />
+                  </mesh>
+                  <mesh position={[0, -1.32, 0]}>
+                    <cylinderGeometry args={[1.12, 1.12, 0.08, 48]} />
+                    <meshStandardMaterial color="#CBD5E1" metalness={0.95} roughness={0.18} />
+                  </mesh>
                   <ShopAircraftModel paint={['#CBD5E1','#C49A64','#9CA3AF','#D6D3D1','#A8A29E','#CBD5E1'][selectedPlane]} />
                   <OrbitControls enablePan={false} enableZoom={true} minDistance={3.8} maxDistance={8} />
                 </Canvas>
               </div>
-              <div className="absolute left-3 right-3 top-[61%] flex items-center justify-between gap-2 border-b border-slate-300/30 pb-2">
-                <div className="min-w-0"><div className="text-[10px] text-sky-200">מטוס נבחר</div><h3 className="truncate text-lg font-black drop-shadow">{planes[selectedPlane].name}</h3></div>
-                <div className="shrink-0 text-left"><div className="text-[10px] text-slate-200">מחיר</div><div className="text-lg font-black text-amber-300">₪ {planes[selectedPlane].price.toLocaleString()}</div></div>
+              <div className="absolute left-3 right-3 top-[61%] flex items-center justify-between gap-2 border-b border-slate-300/30 pb-1">
+                <div className="min-w-0"><div className="text-[9px] text-sky-200">דגם מטוס</div><h3 className="truncate text-sm font-black drop-shadow sm:text-lg">{planes[selectedPlane].name}</h3></div>
+                <div className="shrink-0 text-left"><div className="text-[9px] text-slate-200">מחיר רכישה</div><div className="text-base font-black text-amber-300 sm:text-lg">₪ {planes[selectedPlane].price.toLocaleString()}</div></div>
               </div>
-              <div className="absolute left-3 right-3 top-[72%] space-y-2">
-                {([{label:'מהירות',value:planes[selectedPlane].speed},{label:'תמרון',value:planes[selectedPlane].maneuver},{label:'כוח אש',value:planes[selectedPlane].fire}] as const).map(stat => <div key={stat.label} className="flex items-center gap-2"><span className="w-16 shrink-0 text-xs font-bold text-slate-100">{stat.label}</span><div className="h-3 flex-1 overflow-hidden rounded-sm border border-slate-300/60 bg-slate-950/80"><div className="h-full bg-gradient-to-r from-sky-300 via-cyan-200 to-slate-100 shadow-[0_0_8px_rgba(125,211,252,.7)]" style={{width:stat.value+'%'}} /></div><span className="w-7 text-left text-[10px] text-sky-100">{stat.value}</span></div>)}
+              <div className="absolute left-3 right-3 top-[68%] grid grid-cols-[1fr_1.05fr] gap-2">
+                <p className="text-[9px] leading-4 text-slate-100/95 sm:text-xs">מטוס קרב ואימון מתקדם. מבנה אווירודינמי, ביצועים מאוזנים ויכולת תמרון למשימות אימון וטיסה.</p>
+                <div className="space-y-2">
+                  {([{label:'מהירות',value:planes[selectedPlane].speed,icon:'➤'},{label:'תמרון',value:planes[selectedPlane].maneuver,icon:'↻'},{label:'כוח אש',value:planes[selectedPlane].fire,icon:'✦'}] as const).map(stat => <div key={stat.label} className="flex items-center gap-1"><span className="w-[58px] shrink-0 text-[9px] font-bold text-slate-100 sm:text-xs">{stat.icon} {stat.label}</span><div className="h-2 flex-1 overflow-hidden rounded-sm border border-slate-300/60 bg-slate-950/80"><div className="h-full bg-gradient-to-r from-sky-300 via-cyan-200 to-slate-100 shadow-[0_0_8px_rgba(125,211,252,.7)]" style={{width:stat.value+'%'}} /></div></div>)}
+                </div>
               </div>
             </div>
 
