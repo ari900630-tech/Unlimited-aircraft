@@ -675,7 +675,7 @@ const AIAircraftModel = React.memo(function AIAircraftModel({
 }) {
   const texture = useLoader(THREE.TextureLoader, ENEMY_AIRCRAFT_IMAGE);
   return (
-    <sprite scale={[4.8, 4.8, 1]}>
+    <sprite scale={[7.2, 7.2, 1]}>
       <spriteMaterial map={texture} transparent alphaTest={0.02} depthWrite={false} />
     </sprite>
   );
@@ -1030,13 +1030,13 @@ function FlightScene({
     {
       id: 1,
       callsign: 'BANDIT-01',
-      position: new THREE.Vector3(35, 18, -70),
+      position: new THREE.Vector3(0, 10, -22),
       rotation: new THREE.Euler(0, Math.PI, 0.2, 'YXZ'),
-      center: new THREE.Vector2(-25, -70),
-      radius: 60,
-      angle: 0,
+      center: new THREE.Vector2(0, -34),
+      radius: 14,
+      angle: Math.PI * 1.5,
       speed: 0.36,
-      altitude: 18,
+      altitude: 10,
       color: '#1E293B', // Midnight Phantom Ace
       wingColor: '#0F172A',
       wobble: 0,
@@ -1053,13 +1053,13 @@ function FlightScene({
     {
       id: 2,
       callsign: 'BANDIT-02',
-      position: new THREE.Vector3(15.1, 26, -31.2),
+      position: new THREE.Vector3(-12, 14, -42),
       rotation: new THREE.Euler(0, Math.PI * 0.3, 0.2, 'YXZ'),
-      center: new THREE.Vector2(65, -100),
-      radius: 85,
-      angle: Math.PI * 0.7,
+      center: new THREE.Vector2(-12, -56),
+      radius: 18,
+      angle: Math.PI * 1.5,
       speed: 0.32,
-      altitude: 26,
+      altitude: 14,
       color: '#D97706', // Desert Viper
       wingColor: '#B45309',
       wobble: 0,
@@ -1076,13 +1076,13 @@ function FlightScene({
     {
       id: 3,
       callsign: 'BANDIT-03',
-      position: new THREE.Vector3(-35.5, 34, -259.3),
+      position: new THREE.Vector3(15, 17, -63),
       rotation: new THREE.Euler(0, -Math.PI * 0.4, 0.2, 'YXZ'),
-      center: new THREE.Vector2(0, -150),
-      radius: 115,
-      angle: Math.PI * 1.4,
+      center: new THREE.Vector2(15, -80),
+      radius: 22,
+      angle: Math.PI * 1.5,
       speed: 0.28,
-      altitude: 34,
+      altitude: 17,
       color: '#475569', // Ghost Slate
       wingColor: '#334155',
       wobble: 0,
@@ -1099,13 +1099,13 @@ function FlightScene({
     {
       id: 4,
       callsign: 'BANDIT-04',
-      position: new THREE.Vector3(10.2, 42, -82.7),
+      position: new THREE.Vector3(-20, 20, -83),
       rotation: new THREE.Euler(0, Math.PI * 0.7, 0.2, 'YXZ'),
-      center: new THREE.Vector2(-75, -200),
-      radius: 145,
-      angle: Math.PI * 0.3,
+      center: new THREE.Vector2(-20, -106),
+      radius: 28,
+      angle: Math.PI * 1.5,
       speed: 0.24,
-      altitude: 42,
+      altitude: 20,
       color: '#991B1B', // Crimson Baron
       wingColor: '#7F1D1D',
       wobble: 0,
