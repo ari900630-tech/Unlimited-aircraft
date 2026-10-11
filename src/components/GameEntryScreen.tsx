@@ -245,12 +245,8 @@ export function GameEntryScreen({
               onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = upgradesFallbackImage; }}
               alt="Upgrades Workshop"
               referrerPolicy="no-referrer"
-              className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
+              className="absolute inset-0 w-full h-full object-fill pointer-events-none select-none"
             />
-
-            {/* Top Bar Coin Display */}
-            <div className="absolute top-3 left-4 text-xs font-bold text-cyan-300 font-mono">רמה 12</div>
-            <div className="absolute top-3 right-4 text-xs font-bold text-amber-400 font-mono">₪ {coins.toLocaleString()}</div>
 
             {/* Back Button */}
             <button
@@ -332,41 +328,19 @@ export function GameEntryScreen({
               style={{ left: '71%', top: '61%', width: '18%', height: '11%', touchAction: 'manipulation' }}
             />
 
-            {/* Scrollable Bottom Carousel for Upgrades Screen */}
-            <div
-              ref={carouselRef}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-              data-no-fullscreen="true"
-              className="absolute overflow-x-auto flex gap-3 px-4 no-scrollbar cursor-grab active:cursor-grabbing select-none"
-              style={{
-                left: '5%',
-                right: '5%',
-                top: '79.5%',
-                height: '18%',
-                alignItems: 'center',
-                scrollbarWidth: 'none',
-                WebkitOverflowScrolling: 'touch',
-              }}
-            >
-              {planes.map((p, idx) => {
-                const isSelected = selectedPlane === idx;
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => setSelectedPlane(idx)}
-                    className={`flex-shrink-0 w-[24%] h-[90%] rounded-2xl border-2 flex flex-col items-center justify-center cursor-pointer transition ${
-                      isSelected ? 'border-cyan-400 bg-cyan-400/20 shadow-[0_0_15px_rgba(34,211,238,0.5)]' : 'border-slate-700/80 bg-slate-900/80 hover:border-slate-500'
-                    }`}
-                  >
-                    <span className="text-[11px] font-bold text-white truncate px-1">{p.name.split(' ')[0]}</span>
-                    <span className="text-[10px] text-cyan-300 font-mono mt-1">רמה 12</span>
-                  </div>
-                );
-              })}
-            </div>
+            {/* Transparent aircraft selection hotspots: keep interaction without covering the reference artwork. */}
+            {planes.map((p, idx) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => setSelectedPlane(idx)}
+                aria-label={'בחר מטוס ' + p.name}
+                data-no-fullscreen="true"
+                className="absolute border-0 bg-transparent"
+                style={{ left: (idx * 16.4 + 1) + '%', bottom: '0%', width: '16.4%', height: '18%', touchAction: 'manipulation' }}
+              />
+            ))}
+
           </>
         )}
 
