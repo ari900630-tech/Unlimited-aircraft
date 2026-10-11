@@ -182,70 +182,54 @@ export function GameEntryScreen({
             2. AIRCRAFT SHOP SCREEN (חנות מטוסים מדויקת לתמונה)
            ========================================== */}
         {activeTab === 'shop' && (
-          <section aria-label="חנות מטוסים" className="absolute inset-0 overflow-hidden bg-black">
-            {/* Use the supplied reference artwork as the exact visual layer; functional controls sit above it. */}
+          <section aria-label="חנות מטוסים" className="absolute inset-0 overflow-hidden bg-[#17283a]">
+            {/* The exact shop artwork is stored in this repository, so it does not depend on a third-party image host. */}
             <img
-              src="https://i.postimg.cc/MKJp7Lmv/Gemini-Generated-Image-fcqd5zfcqd5zfcqd.jpg"
-              alt="מסך חנות המטוסים המקורי"
-              className="absolute inset-0 h-full w-full object-fill pointer-events-none select-none"
+              src={`${import.meta.env.BASE_URL}src/assets/images/wings_shop_exact_new_1791676618855.jpg`}
+              alt="חנות המטוסים Wings of Israel"
+              className="absolute inset-0 h-full w-full object-fill select-none pointer-events-none"
               draggable={false}
             />
-            <button
-              type="button"
-              onClick={() => setActiveTab('main')}
-              aria-label="חזרה לתפריט"
-              className="absolute left-[2%] top-[2%] z-20 h-[9%] w-[14%] rounded-xl border-0 bg-transparent active:bg-white/20"
-            />
-            {/* Select aircraft with the reference artwork visible; this control opens the interactive selector. */}
-            <button
-              type="button"
+            {/* Transparent hit areas preserve the reference artwork without adding visible UI on top of it. */}
+            <button type="button" onClick={() => setActiveTab('main')} aria-label="חזור לתפריט"
+              className="absolute z-20 border-0 bg-transparent active:bg-white/10"
+              style={{left:'1%',top:'7%',width:'19%',height:'8%',touchAction:'manipulation'}} />
+            <button type="button" onClick={() => setSelectedPlane((selectedPlane + planes.length - 1) % planes.length)} aria-label="המטוס הקודם"
+              className="absolute z-20 border-0 bg-transparent active:bg-white/10"
+              style={{left:'0%',bottom:'0%',width:'4%',height:'20%',touchAction:'manipulation'}} />
+            <button type="button" onClick={() => setSelectedPlane((selectedPlane + 1) % planes.length)} aria-label="המטוס הבא"
+              className="absolute z-20 border-0 bg-transparent active:bg-white/10"
+              style={{right:'0%',bottom:'0%',width:'4%',height:'20%',touchAction:'manipulation'}} />
+            {[
+              {id:0,left:'3%',width:'25%'},
+              {id:1,left:'29%',width:'25%'},
+              {id:2,left:'55%',width:'25%'},
+              {id:3,left:'80%',width:'20%'},
+            ].map((card) => (
+              <button key={card.id} type="button" onClick={() => setSelectedPlane(card.id)}
+                aria-label={'בחר '+planes[card.id].name}
+                className="absolute z-20 border-0 bg-transparent active:bg-white/10"
+                style={{left:card.left,bottom:'1%',width:card.width,height:'19%',touchAction:'manipulation'}} />
+            ))}
+            <button type="button"
               onClick={() => {
-                const next = (selectedPlane + 1) % planes.length;
-                setSelectedPlane(next);
-              }}
-              aria-label="הצג את המטוס הבא"
-              className="absolute left-[30%] top-[24%] z-20 h-[38%] w-[40%] rounded-2xl border-0 bg-transparent active:bg-cyan-200/10"
-            />
-            {/* Bottom action area: buy/equip the currently selected aircraft. */}
-            <div className="absolute bottom-0 left-0 right-0 z-30 flex items-center justify-between gap-2 p-3">
-              <div className="rounded-lg bg-slate-950/85 px-3 py-2 text-right text-white shadow-lg">
-                <div className="text-[10px] text-slate-300">מטוס נבחר</div>
-                <div className="text-xs font-black">{planes[selectedPlane].name}</div>
-                <div className="text-[10px] font-bold text-amber-300">
-                  {ownedPlanes.includes(selectedPlane) ? 'בבעלותך' : '◈ ' + planes[selectedPlane].price.toLocaleString('he-IL')}
-                </div>
-                <div className="text-[9px] text-amber-200">יתרה: {coins.toLocaleString('he-IL')} ◈</div>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  if (ownedPlanes.includes(selectedPlane)) {
-                    setEquippedPlane(selectedPlane);
-                    setActiveTab('main');
-                    return;
-                  }
-                  const plane = planes[selectedPlane];
-                  if (coins < plane.price) {
-                    alert('אין מספיק מטבעות. חסרים ' + (plane.price - coins).toLocaleString('he-IL') + ' מטבעות.');
-                    return;
-                  }
-                  onCoinsChange((value) => value - plane.price);
-                  setOwnedPlanes((prev) => prev.includes(selectedPlane) ? prev : [...prev, selectedPlane]);
+                const plane = planes[selectedPlane];
+                if (ownedPlanes.includes(selectedPlane)) {
                   setEquippedPlane(selectedPlane);
-                }}
-                className="min-h-12 rounded-xl border border-white/70 bg-sky-500 px-4 py-3 text-sm font-black text-white shadow-xl active:scale-95"
-              >
-                {ownedPlanes.includes(selectedPlane) ? (equippedPlane === selectedPlane ? 'המטוס בשימוש' : 'בחר והפעל') : 'רכישת מטוס'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedPlane((selectedPlane + 1) % planes.length)}
-                aria-label="מטוס הבא"
-                className="min-h-12 rounded-xl border border-white/50 bg-slate-950/85 px-3 py-3 text-sm font-black text-white active:scale-95"
-              >
-                הבא ‹
-              </button>
-            </div>
+                  setActiveTab('main');
+                  return;
+                }
+                if (coins < plane.price) {
+                  alert('אין מספיק מטבעות. חסרים ' + (plane.price - coins).toLocaleString('he-IL') + ' מטבעות.');
+                  return;
+                }
+                onCoinsChange((value) => value - plane.price);
+                setOwnedPlanes((prev) => prev.includes(selectedPlane) ? prev : [...prev, selectedPlane]);
+                setEquippedPlane(selectedPlane);
+              }}
+              aria-label={ownedPlanes.includes(selectedPlane) ? 'בחר והפעל מטוס' : 'רכישת מטוס'}
+              className="absolute z-20 border-0 bg-transparent active:bg-white/10"
+              style={{left:'29%',top:'70%',width:'42%',height:'11%',touchAction:'manipulation'}} />
           </section>
         )}
 
