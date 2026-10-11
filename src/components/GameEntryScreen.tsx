@@ -1,7 +1,76 @@
 import React, { useState, useRef } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { User, Coins, ShieldCheck } from 'lucide-react';
 import upgradesFallbackImage from '../assets/images/wings_upgrades_exact_new_1791676639538.jpg';
 
+
+const previewPaint = [
+  { body: '#B91C1C', wing: '#7F1D1D' },
+  { body: '#64748B', wing: '#334155' },
+  { body: '#0F172A', wing: '#38BDF8' },
+  { body: '#D6D3D1', wing: '#78716C' },
+  { body: '#78716C', wing: '#44403C' },
+  { body: '#475569', wing: '#0F172A' },
+];
+
+function LowPolyAircraft({ planeIndex }: { planeIndex: number }) {
+  const aircraft = useRef<import('three').Group>(null);
+  const paint = previewPaint[Math.max(0, Math.min(previewPaint.length - 1, planeIndex))];
+  useFrame(({ clock }) => {
+    if (!aircraft.current) return;
+    aircraft.current.rotation.y = Math.sin(clock.elapsedTime * 0.22) * 0.28;
+    aircraft.current.rotation.x = -0.08 + Math.sin(clock.elapsedTime * 0.38) * 0.025;
+  });
+  return (
+    <group ref={aircraft} scale={0.9} rotation={[0, -0.25, 0]}>
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.05]}>
+        <cylinderGeometry args={[0.23, 0.32, 3.35, 8]} />
+        <meshStandardMaterial color={paint.body} metalness={0.62} roughness={0.32} flatShading />
+      </mesh>
+      <mesh position={[0, 0, -1.85]} rotation={[-Math.PI / 2, 0, 0]}>
+        <coneGeometry args={[0.23, 0.62, 8]} />
+        <meshStandardMaterial color="#cbd5e1" metalness={0.75} roughness={0.25} flatShading />
+      </mesh>
+      <mesh position={[0, 0.27, -0.48]} scale={[0.8, 0.46, 1.15]}>
+        <sphereGeometry args={[0.34, 8, 6]} />
+        <meshStandardMaterial color="#38bdf8" metalness={0.55} roughness={0.16} transparent opacity={0.86} flatShading />
+      </mesh>
+      <mesh position={[0, -0.06, 0.12]}>
+        <boxGeometry args={[4.1, 0.12, 0.82]} />
+        <meshStandardMaterial color={paint.wing} metalness={0.5} roughness={0.38} flatShading />
+      </mesh>
+      <mesh position={[0, 0.02, 1.25]}>
+        <boxGeometry args={[1.55, 0.1, 0.42]} />
+        <meshStandardMaterial color={paint.wing} metalness={0.5} roughness={0.38} flatShading />
+      </mesh>
+      <mesh position={[0, 0.28, 1.2]} rotation={[0, 0, 0]}>
+        <boxGeometry args={[0.12, 0.62, 0.48]} />
+        <meshStandardMaterial color={paint.body} metalness={0.5} roughness={0.38} flatShading />
+      </mesh>
+      {[-1, 1].map((side) => (
+        <group key={side} position={[side * 1.35, -0.18, 0.25]}>
+          <mesh><boxGeometry args={[0.13, 0.14, 0.88]} /><meshStandardMaterial color="#94a3b8" metalness={0.7} roughness={0.28} /></mesh>
+          <mesh position={[0, -0.17, 0.12]}><boxGeometry args={[0.18, 0.18, 0.28]} /><meshStandardMaterial color="#b91c1c" metalness={0.45} roughness={0.35} /></mesh>
+        </group>
+      ))}
+      <mesh position={[0, 0.005, -0.02]}>
+        <boxGeometry args={[0.11, 0.025, 1.5]} />
+        <meshStandardMaterial color="#f8fafc" metalness={0.35} roughness={0.3} />
+      </mesh>
+    </group>
+  );
+}
+
+function AircraftPreview3D({ planeIndex }: { planeIndex: number }) {
+  return (
+    <Canvas dpr={[1, 1.5]} camera={{ position: [4.3, 3.2, -5.7], fov: 38 }} gl={{ antialias: true, alpha: true }}>
+      <ambientLight intensity={1.1} />
+      <directionalLight position={[4, 6, -3]} intensity={2.1} />
+      <pointLight position={[-4, 2, 3]} intensity={0.9} color="#38bdf8" />
+      <LowPolyAircraft planeIndex={planeIndex} />
+    </Canvas>
+  );
+}
 
 interface GameEntryScreenProps {
   isOpen: boolean;
@@ -257,22 +326,7 @@ export function GameEntryScreen({
                 <div className="absolute bottom-[8%] h-[28%] w-[120%] -rotate-6 border-t-2 border-cyan-200/30 bg-gradient-to-b from-slate-400/20 to-slate-950/70" />
                 <div className="absolute top-[13%] right-[12%] text-right"><div className="text-xs font-bold tracking-[0.25em] text-white/55">IAF • ISRAEL</div><div className="text-2xl font-black text-white/80">0{selectedPlane+1}</div></div>
                 <div className="relative z-[1] w-full px-[2%] text-center">
-                  <svg viewBox="0 0 640 300" role="img" aria-label="איור מטוס קרב" className="w-full drop-shadow-[0_20px_18px_rgba(0,0,0,0.65)]">
-                    <defs><linearGradient id="m346-body" x1="0" y1="0" x2="0.1" y2="1"><stop offset="0" stopColor="#f8fafc"/><stop offset=".48" stopColor="#aab8c7"/><stop offset="1" stopColor="#4a596b"/></linearGradient><linearGradient id="m346-wing" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#e5edf4"/><stop offset="1" stopColor="#66788c"/></linearGradient></defs>
-                    <g transform="translate(320 150) rotate(-4)">
-                      <path d="M-278 20 L-72 -10 L-18 -26 L-4 -112 L26 -112 L47 -28 L235 -63 L270 -50 L112 8 L56 26 L-45 24 L-220 48 Z" fill="url(#m346-wing)" stroke="#f8fafc" strokeWidth="3"/>
-                      <path d="M-40 -35 L-3 -130 L17 -136 L25 -36 L-4 45 L-26 48 Z" fill="#d9e2ec" stroke="#f8fafc" strokeWidth="2"/>
-                      <path d="M-20 -115 L-4 -154 L10 -157 L20 -117 L9 -92 L-8 -92 Z" fill="#1f3448"/>
-                      <path d="M-295 20 Q-150 -7 -24 -18 L210 -52 L273 -48 L215 -25 L38 17 L-20 39 L-242 58 Z" fill="url(#m346-body)" stroke="#f8fafc" strokeWidth="2"/>
-                      <path d="M-160 3 L-42 -11 L14 -19 L0 8 L-151 32 Z" fill="#c62828"/>
-                      <path d="M-50 -10 L-6 -22 L17 -17 L-10 3 L-60 12 Z" fill="#fff"/>
-                      <path d="M-10 -18 L30 -24 L58 -24 L18 -7 L-12 1 Z" fill="#c62828"/>
-                      <path d="M-24 -21 L-5 -70 L10 -73 L20 -23 Z" fill="#263c52" stroke="#dbeafe" strokeWidth="2"/>
-                      <path d="M-7 -65 L7 -67 L12 -29 L-13 -26 Z" fill="#55b8df" opacity=".8"/>
-                      <path d="M-254 42 L-210 34 L-223 49 Z" fill="#c62828"/><path d="M-242 41 L-224 38 L-230 45 Z" fill="#fff"/>
-                      <circle cx="74" cy="-20" r="5" fill="#c62828"/><path d="M-85 25 L-60 21 L-71 30 Z" fill="#334155"/>
-                    </g>
-                  </svg>
+                  <div className="h-[clamp(150px,34vh,330px)] w-full drop-shadow-[0_20px_18px_rgba(0,0,0,0.65)]"><AircraftPreview3D planeIndex={selectedPlane} /></div>            </svg>
                   <div className="mt-[-1%] text-xs font-black tracking-[0.25em] text-white/60">M-346 • לביא</div>
                 </div>
               </div>
