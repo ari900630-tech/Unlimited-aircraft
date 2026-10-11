@@ -2082,11 +2082,6 @@ export default function App() {
       {/* In-Flight Mobile App Top Bar (Active when in flight) */}
       {!isEntryScreenOpen && (
         <>
-          {/* Top Left: Auto-Diagnostics only; the in-flight menu button is intentionally removed. */}
-          <div className="absolute top-3 left-3 pointer-events-auto z-20">
-            <DiagnosticHUDButton className="" onOpen={() => setIsDiagnosticsOpen(true)} />
-          </div>
-
           {/* Top Center: score, kills, and the same persistent shop currency */}
           <div className="absolute top-3 left-1/2 -translate-x-1/2 pointer-events-none z-20 flex max-w-[58vw] items-center gap-2 sm:gap-3 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-slate-950/90 backdrop-blur-md border border-slate-700 text-[10px] sm:text-xs font-mono shadow-md whitespace-nowrap">
             <div className="flex items-center gap-1 text-amber-400">
