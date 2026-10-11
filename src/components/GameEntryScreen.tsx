@@ -48,7 +48,19 @@ export function GameEntryScreen({
   const [equippedPlane, setEquippedPlane] = useState(() => {
     try { return Math.max(0, Math.min(5, Number(localStorage.getItem('unlimited-aircraft-equipped') || 0))); } catch { return 0; }
   });
-  const [upgrades, setUpgrades] = useState<Record<UpgradeKey, number>>({ engine: 2, avionics: 1, weapons: 0, armor: 1 });
+  const [upgrades, setUpgrades] = useState<Record<UpgradeKey, number>>(() => {
+    const defaults: Record<UpgradeKey, number> = { engine: 2, avionics: 1, weapons: 0, armor: 1 };
+    try {
+      const saved = JSON.parse(localStorage.getItem('unlimited-aircraft-upgrades') || 'null');
+      if (!saved || typeof saved !== 'object') return defaults;
+      return {
+        engine: Math.max(0, Math.min(5, Number(saved.engine ?? defaults.engine))),
+        avionics: Math.max(0, Math.min(4, Number(saved.avionics ?? defaults.avionics))),
+        weapons: Math.max(0, Math.min(3, Number(saved.weapons ?? defaults.weapons))),
+        armor: Math.max(0, Math.min(5, Number(saved.armor ?? defaults.armor))),
+      };
+    } catch { return defaults; }
+  });
   const [pressedAction, setPressedAction] = useState('');
   const [notice, setNotice] = useState('');
 
