@@ -186,7 +186,6 @@ export function GameEntryScreen({
             <img src="https://i.postimg.cc/MKJp7Lmv/Gemini-Generated-Image-fcqd5zfcqd5zfcqd.jpg" alt="חנות מטוסים Wings of Israel" className="absolute inset-0 h-full w-full object-fill select-none pointer-events-none" draggable={false} />
             {/* Interactive hotspots are layered over the supplied reference artwork; the screenshot itself is not the only interaction. */}
             <button type="button" onClick={() => setActiveTab('main')} aria-label="חזור" className="absolute z-20 rounded-xl active:scale-95" style={{left:'0%',top:'27%',width:'12%',height:'10%',touchAction:'manipulation'}} />
-            <button type="button" onClick={() => setActiveTab('main')} aria-label="חזור לתפריט" className="absolute z-20 rounded-xl active:scale-95" style={{left:'0%',top:'27%',width:'12%',height:'10%',touchAction:'manipulation'}} />
             {planes.map((p, idx) => {
               const positions = [
                 {left:'9%', width:'24%'},
@@ -221,10 +220,6 @@ export function GameEntryScreen({
               aria-label={ownedPlanes.includes(selectedPlane) ? 'בחר מטוס' : 'קנה מטוס'}
               className="absolute z-30 rounded-2xl active:scale-95"
               style={{left:'31%',top:'64%',width:'38%',height:'9%',touchAction:'manipulation'}} />
-            {/* Accessible dynamic status, kept visually unobtrusive to preserve the reference layout */}
-            <div className="absolute z-10 bottom-[1%] right-2 rounded bg-slate-950/80 px-2 py-1 text-[10px] text-white/90 pointer-events-none">
-              {planes[selectedPlane].name} · {ownedPlanes.includes(selectedPlane) ? 'נרכש' : '₪ '+planes[selectedPlane].price.toLocaleString()}
-            </div>
           </section>
         )}
         {/* ==========================================
