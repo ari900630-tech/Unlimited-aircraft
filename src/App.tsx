@@ -1876,7 +1876,7 @@ export default function App() {
   const screenDragOrigin = useRef({ x: 0, y: 0 });
   const handleFlightDragStart = (e: React.PointerEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
-    if (isEntryScreenOpen || target.closest('[data-no-fullscreen],button,[role="button"]')) return;
+    if (isEntryScreenOpen || isGameMenuOpen || target.closest('[data-no-fullscreen],button,[role="button"]')) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     screenDragPointerId.current = e.pointerId;
     screenDragOrigin.current = { x: e.clientX, y: e.clientY };
@@ -2065,7 +2065,7 @@ export default function App() {
           camera={{ position: [0, 2.5, 36], fov: 55, far: 650 }}
         >
           <FlightScene
-            isFlying={isFlying}
+            isFlying={isFlying && !isGameMenuOpen}
             turnInputRef={turnInputRef}
             pitchInputRef={pitchInputRef}
             isShootingRef={isShootingRef}
