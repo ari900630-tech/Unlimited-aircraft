@@ -55,6 +55,32 @@ export function GameEntryScreen({
   const startX = useRef(0);
   const scrollLeft = useRef(0);
 
+  // Swipe gesture for the aircraft row at the bottom of the shop screen.
+  const shopSwipeStart = useRef<{ x: number; y: number } | null>(null);
+  const shopSwipeMoved = useRef(false);
+  const handleShopPointerDown = (event: React.PointerEvent<HTMLElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    if (event.clientY >= rect.top + rect.height * 0.76) {
+      shopSwipeStart.current = { x: event.clientX, y: event.clientY };
+      shopSwipeMoved.current = false;
+    } else {
+      shopSwipeStart.current = null;
+    }
+  };
+  const handleShopPointerUp = (event: React.PointerEvent<HTMLElement>) => {
+    const start = shopSwipeStart.current;
+    shopSwipeStart.current = null;
+    if (!start) return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    if (Math.abs(dx) > 28 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+      shopSwipeMoved.current = true;
+      setSelectedPlane((current) => (current + (dx < 0 ? 1 : planes.length - 1)) % planes.length);
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  };
+
   // Upgrades levels for planes
   const [upgrades, setUpgrades] = useState({
     engine: 2,
@@ -184,7 +210,7 @@ export function GameEntryScreen({
             2. AIRCRAFT SHOP SCREEN (חנות מטוסים מדויקת לתמונה)
            ========================================== */}
         {activeTab === 'shop' && (
-          <section aria-label="חנות מטוסים" className="absolute inset-0 overflow-hidden bg-[#17283a]">
+          <section aria-label="חנות מטוסים" className="absolute inset-0 overflow-hidden bg-[#17283a]" onPointerDownCapture={handleShopPointerDown} onPointerUpCapture={handleShopPointerUp} onPointerCancelCapture={() => { shopSwipeStart.current = null; }}>
             {/* The exact shop artwork is stored in this repository, so it does not depend on a third-party image host. */}
             <img
               src={shopReferenceImage}
