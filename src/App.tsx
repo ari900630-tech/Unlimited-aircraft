@@ -1905,7 +1905,7 @@ export default function App() {
   const [activePlaneId, setActivePlaneId] = useState(0);
   const handlePlaneSelected = React.useCallback((planeId: number) => setActivePlaneId(planeId), []);
   const planePaint = [
-    { body: '#E11D48', wing: '#991B1B' },
+    { body: '#B91C1C', wing: '#7F1D1D' },
     { body: '#64748B', wing: '#334155' },
     { body: '#0F172A', wing: '#38BDF8' },
     { body: '#D6D3D1', wing: '#78716C' },
