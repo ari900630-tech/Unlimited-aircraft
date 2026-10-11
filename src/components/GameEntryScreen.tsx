@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { User } from 'lucide-react';
+import { User, Coins, ShieldCheck, Zap, Crosshair, Gauge } from 'lucide-react';
 import shopReferenceImage from '../assets/images/wings_shop_exact_new_1791676618855.jpg';
 import upgradesFallbackImage from '../assets/images/wings_upgrades_exact_new_1791676639538.jpg';
 
@@ -20,6 +20,7 @@ interface GameEntryScreenProps {
 export function GameEntryScreen({
   isOpen,
   onStartFlight,
+  score = 0,
   onOpenDiagnostics,
   onPlaneSelected,
   coins,
@@ -145,6 +146,17 @@ export function GameEntryScreen({
               className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
             />
 
+            {/* Live main-menu status strip: dynamic values above the artwork */}
+            <div className="pointer-events-none absolute inset-x-[4%] top-[2.5%] z-10 flex items-start justify-between gap-2" dir="rtl">
+              <div className="rounded-xl border border-amber-200/35 bg-slate-950/75 px-3 py-2 text-right text-white shadow-lg backdrop-blur-sm">
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-100/80"><Coins className="h-3.5 w-3.5 text-amber-300" /> יתרת מטבעות</div>
+                <div className="mt-0.5 font-mono text-sm font-black tabular-nums text-amber-300">{coins.toLocaleString('he-IL')}</div>
+              </div>
+              <div className="rounded-xl border border-sky-200/30 bg-slate-950/75 px-3 py-2 text-left text-white shadow-lg backdrop-blur-sm">
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-sky-100/80"><ShieldCheck className="h-3.5 w-3.5 text-sky-300" /> דרגת טייס</div>
+                <div className="mt-0.5 font-mono text-sm font-black tabular-nums text-sky-200">רמה {Math.floor(Math.max(0, score) / 1000) + 1}</div>
+              </div>
+            </div>
             {/* Main Play Button */}
             <button
               onClick={handlePlayClick}
@@ -211,8 +223,6 @@ export function GameEntryScreen({
            ========================================== */}
         {activeTab === 'shop' && (
           <section aria-label="חנות מטוסים" className="absolute inset-0 overflow-hidden bg-slate-950 text-white" onPointerDownCapture={handleShopPointerDown} onPointerUpCapture={handleShopPointerUp} onPointerCancelCapture={() => { shopSwipeStart.current = null; }}>
-            {/* Temporary low-opacity calibration layer: keep until the real UI is visually checked against the reference. */}
-            <img src={shopReferenceImage} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-fill opacity-[0.12] pointer-events-none select-none" draggable={false} />
             <div className="absolute inset-0 bg-gradient-to-b from-[#0b1a2a]/85 via-[#172b40]/75 to-[#02070e]/95" />
             <header className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-[4%] py-[3%] border-b border-cyan-200/20 bg-slate-950/65">
               <button type="button" onClick={() => setActiveTab('main')} aria-label="חזרה לתפריט" className="rounded-lg border border-white/25 bg-slate-800/80 px-3 py-2 text-sm font-bold active:scale-95">‹ חזרה</button>
@@ -319,6 +329,20 @@ export function GameEntryScreen({
               style={{ left: '50%', top: '73.5%', transform: 'translate(-50%, -50%)', width: '52%', height: '7.8%', touchAction: 'manipulation' }}
             />
 
+            {/* Live upgrade levels and prices — visual labels paired with the four real hotspots */}
+            <div className="pointer-events-none absolute left-[29%] top-[24%] z-[3] w-[18%] rounded-lg border border-sky-200/30 bg-slate-950/85 px-1.5 py-1 text-center text-white shadow-lg">
+              <div className="text-[clamp(8px,1.7vw,12px)] font-black">מנוע</div><div className="text-[clamp(7px,1.45vw,10px)] text-sky-200">Lvl {upgrades.engine}/5</div><div className="text-[clamp(7px,1.45vw,10px)] font-bold text-amber-300">{upgrades.engine >= 5 ? 'מקסימום' : '◈ 5,000'}</div>
+            </div>
+            <div className="pointer-events-none absolute left-[71%] top-[24%] z-[3] w-[18%] rounded-lg border border-sky-200/30 bg-slate-950/85 px-1.5 py-1 text-center text-white shadow-lg">
+              <div className="text-[clamp(8px,1.7vw,12px)] font-black">אוויוניקה</div><div className="text-[clamp(7px,1.45vw,10px)] text-sky-200">Lvl {upgrades.avionics}/4</div><div className="text-[clamp(7px,1.45vw,10px)] font-bold text-amber-300">{upgrades.avionics >= 4 ? 'מקסימום' : '◈ 3,500'}</div>
+            </div>
+            <div className="pointer-events-none absolute left-[29%] top-[55%] z-[3] w-[18%] rounded-lg border border-sky-200/30 bg-slate-950/85 px-1.5 py-1 text-center text-white shadow-lg">
+              <div className="text-[clamp(8px,1.7vw,12px)] font-black">חימוש</div><div className="text-[clamp(7px,1.45vw,10px)] text-sky-200">Lvl {upgrades.weapons}/3</div><div className="text-[clamp(7px,1.45vw,10px)] font-bold text-amber-300">{upgrades.weapons >= 3 ? 'מקסימום' : '◈ 7,500'}</div>
+            </div>
+            <div className="pointer-events-none absolute left-[71%] top-[55%] z-[3] w-[18%] rounded-lg border border-sky-200/30 bg-slate-950/85 px-1.5 py-1 text-center text-white shadow-lg">
+              <div className="text-[clamp(8px,1.7vw,12px)] font-black">שריון</div><div className="text-[clamp(7px,1.45vw,10px)] text-sky-200">Lvl {upgrades.armor}/5</div><div className="text-[clamp(7px,1.45vw,10px)] font-bold text-amber-300">{upgrades.armor >= 5 ? 'מקסימום' : '◈ 4,200'}</div>
+            </div>
+
             {/* Individual Upgrade Hotspots */}
             <button
               onClick={() => {
@@ -397,7 +421,7 @@ export function GameEntryScreen({
             data-no-fullscreen="true"
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
           >
-            <div className="relative w-full max-w-sm bg-slate-900/95 border border-cyan-500/50 rounded-2xl p-6 shadow-2xl text-white">
+            <div className="relative w-full max-w-sm bg-gradient-to-b from-[#23364a]/95 via-[#101e30]/97 to-[#060d17]/98 border border-sky-200/25 rounded-2xl p-6 shadow-2xl text-white">
               <div className="flex flex-col items-center text-center pb-4 border-b border-slate-800">
                 <div className="w-16 h-16 rounded-full bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center text-cyan-300 shadow-[0_0_20px_rgba(34,211,238,0.4)] mb-3">
                   <User className="w-8 h-8" />
