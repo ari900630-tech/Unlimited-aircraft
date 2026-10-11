@@ -6,7 +6,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Canvas, useFrame, useThree, useLoader } from '@react-three/fiber';
 import { Sky, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import { Crosshair, ShieldCheck, Wrench, AlertTriangle, RefreshCw, Trophy, Coins, MoreVertical, X, Home, Play, LogOut } from 'lucide-react';
+import { Crosshair, ShieldCheck, Wrench, AlertTriangle, RefreshCw, Menu, Trophy, Coins } from 'lucide-react';
 import { FlightErrorBoundary } from './components/FlightErrorBoundary';
 import { DiagnosticReportModal } from './components/DiagnosticReportModal';
 import { GameEntryScreen } from './components/GameEntryScreen';
@@ -166,9 +166,9 @@ function TacticalRadar() {
   }, []);
 
   return (
-    <div className="absolute top-3 left-3 pointer-events-none z-20">
+    <div className="absolute top-3 right-3 pointer-events-none z-20">
       <div
-        className="w-11 h-11 rounded-full bg-slate-950/75 backdrop-blur-md border border-emerald-400/45 relative shadow-lg overflow-hidden flex items-center justify-center pointer-events-auto"
+        className="w-12 h-12 rounded-full bg-slate-950/90 backdrop-blur-md border border-emerald-500/60 relative shadow-2xl overflow-hidden flex items-center justify-center pointer-events-auto"
         title="מכ״ם קרב אווירי"
       >
         {/* Radar Sweep Scanner Cone */}
@@ -271,7 +271,7 @@ function VirtualJoystick({
   const baseRef = useRef<HTMLDivElement>(null);
   const activePointerId = useRef<number | null>(null);
 
-  const maxRadius = 29;
+  const maxRadius = 32;
 
   const updatePosition = (clientX: number, clientY: number) => {
     if (!baseRef.current) return;
@@ -337,7 +337,7 @@ function VirtualJoystick({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className="relative w-[88px] h-[88px] touch-none flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
+      className="relative w-24 h-24 touch-none flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
     >
       {/* Thumbstick Knob - Pure aerospace blue control knob without bulky container */}
       <div
@@ -665,52 +665,19 @@ const DetailedAirplane = React.forwardRef<
 DetailedAirplane.displayName = 'DetailedAirplane';
 
 const AIAircraftModel = React.memo(function AIAircraftModel({
-  color,
-  wingtipColor,
-  propAngle = 0,
+  color: _color,
+  wingtipColor: _wingtipColor,
+  propAngle: _propAngle = 0,
 }: {
   color: string;
   wingtipColor: string;
   propAngle?: number;
 }) {
-  // Use actual Three.js geometry instead of an SVG sprite. This avoids invisible
-  // texture-loading failures and keeps the enemy aircraft visible from all angles.
+  const texture = useLoader(THREE.TextureLoader, ENEMY_AIRCRAFT_IMAGE);
   return (
-    <group scale={1.45}>
-      {/* Fuselage: nose points toward -Z, matching the player's flight direction */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.22, 0.34, 3.2, 10]} />
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.22} metalness={0.35} roughness={0.38} />
-      </mesh>
-      <mesh position={[0, 0.12, -1.8]} rotation={[-Math.PI / 2, 0, 0]}>
-        <coneGeometry args={[0.22, 0.9, 10]} />
-        <meshStandardMaterial color="#F8FAFC" emissive="#7F1D1D" emissiveIntensity={0.25} />
-      </mesh>
-      {/* Wide wings and rear stabilizers make the silhouette easy to see */}
-      <mesh position={[0, 0, -0.05]}>
-        <boxGeometry args={[5.6, 0.14, 1.05]} />
-        <meshStandardMaterial color={wingtipColor} emissive={wingtipColor} emissiveIntensity={0.25} />
-      </mesh>
-      <mesh position={[0, 0.02, 1.18]}>
-        <boxGeometry args={[2.2, 0.12, 0.62]} />
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.25} />
-      </mesh>
-      <mesh position={[0, 0.42, 1.05]}>
-        <boxGeometry args={[0.14, 0.82, 0.55]} />
-        <meshStandardMaterial color={wingtipColor} emissive={wingtipColor} emissiveIntensity={0.3} />
-      </mesh>
-      <mesh position={[0, 0.3, -0.48]}>
-        <sphereGeometry args={[0.28, 10, 8]} />
-        <meshBasicMaterial color="#FDE68A" />
-      </mesh>
-      {/* Bright red wingtip markers improve contrast at a distance */}
-      {[-2.75, 2.75].map((x) => (
-        <mesh key={x} position={[x, 0.1, -0.05]}>
-          <boxGeometry args={[0.22, 0.18, 0.28]} />
-          <meshBasicMaterial color="#FACC15" />
-        </mesh>
-      ))}
-    </group>
+    <sprite scale={[4.8, 4.8, 1]}>
+      <spriteMaterial map={texture} transparent alphaTest={0.02} depthWrite={false} />
+    </sprite>
   );
 });
 
@@ -1063,13 +1030,13 @@ function FlightScene({
     {
       id: 1,
       callsign: 'BANDIT-01',
-      position: new THREE.Vector3(0, 10, -22),
+      position: new THREE.Vector3(35, 18, -70),
       rotation: new THREE.Euler(0, Math.PI, 0.2, 'YXZ'),
-      center: new THREE.Vector2(0, -34),
-      radius: 14,
-      angle: Math.PI * 1.5,
+      center: new THREE.Vector2(-25, -70),
+      radius: 60,
+      angle: 0,
       speed: 0.36,
-      altitude: 10,
+      altitude: 18,
       color: '#1E293B', // Midnight Phantom Ace
       wingColor: '#0F172A',
       wobble: 0,
@@ -1086,13 +1053,13 @@ function FlightScene({
     {
       id: 2,
       callsign: 'BANDIT-02',
-      position: new THREE.Vector3(-12, 4.5, -42),
+      position: new THREE.Vector3(15.1, 26, -31.2),
       rotation: new THREE.Euler(0, Math.PI * 0.3, 0.2, 'YXZ'),
-      center: new THREE.Vector2(-12, -56),
-      radius: 18,
-      angle: Math.PI * 1.5,
+      center: new THREE.Vector2(65, -100),
+      radius: 85,
+      angle: Math.PI * 0.7,
       speed: 0.32,
-      altitude: 4.5,
+      altitude: 26,
       color: '#D97706', // Desert Viper
       wingColor: '#B45309',
       wobble: 0,
@@ -1109,13 +1076,13 @@ function FlightScene({
     {
       id: 3,
       callsign: 'BANDIT-03',
-      position: new THREE.Vector3(15, 5.5, -63),
+      position: new THREE.Vector3(-35.5, 34, -259.3),
       rotation: new THREE.Euler(0, -Math.PI * 0.4, 0.2, 'YXZ'),
-      center: new THREE.Vector2(15, -80),
-      radius: 22,
-      angle: Math.PI * 1.5,
+      center: new THREE.Vector2(0, -150),
+      radius: 115,
+      angle: Math.PI * 1.4,
       speed: 0.28,
-      altitude: 5.5,
+      altitude: 34,
       color: '#475569', // Ghost Slate
       wingColor: '#334155',
       wobble: 0,
@@ -1132,15 +1099,15 @@ function FlightScene({
     {
       id: 4,
       callsign: 'BANDIT-04',
-      position: new THREE.Vector3(-20, 6.5, -83),
+      position: new THREE.Vector3(10.2, 42, -82.7),
       rotation: new THREE.Euler(0, Math.PI * 0.7, 0.2, 'YXZ'),
-      center: new THREE.Vector2(-20, -106),
-      radius: 28,
-      angle: Math.PI * 1.5,
+      center: new THREE.Vector2(-75, -200),
+      radius: 145,
+      angle: Math.PI * 0.3,
       speed: 0.24,
-      altitude: 6.5,
-      color: '#0F766E', // Teal Specter — visually distinct from the player's aircraft
-      wingColor: '#14B8A6',
+      altitude: 42,
+      color: '#991B1B', // Crimson Baron
+      wingColor: '#7F1D1D',
       wobble: 0,
       isHit: false,
       hitTimer: 0,
@@ -1285,7 +1252,7 @@ function FlightScene({
       !isFinite(planeRot.current.y) ||
       !isFinite(planeRot.current.z) ||
       planePos.current.y < 0.2 ||
-      planePos.current.y > 1200 ||
+      planePos.current.y > 140 ||
       Math.abs(planePos.current.x) > 550 ||
       Math.abs(planePos.current.z) > 550
     ) {
@@ -1490,9 +1457,10 @@ function FlightScene({
       // We clamp pitch and allow smooth attitude holding without snapping down!
       if (Math.abs(pitchInput) > 0.02) {
         planeRot.current.x = THREE.MathUtils.lerp(planeRot.current.x, pitchInput * 0.48, dt * 3.8);
+      } else {
+        // Very gentle aerodynamic trim to horizon (does NOT jerk the plane down)
+        planeRot.current.x = THREE.MathUtils.lerp(planeRot.current.x, 0, dt * 0.5);
       }
-      // When the stick is released, preserve the current pitch attitude.
-      // This prevents automatic nose-down trimming while the player is climbing.
 
       // Direct 3D flight vector aligned with heading and pitch
       const heading = planeRot.current.y;
@@ -1507,13 +1475,13 @@ function FlightScene({
       planePos.current.y += forwardDir.y * currentSpeed.current * dt;
       planePos.current.z += forwardDir.z * currentSpeed.current * dt;
 
-      // Minimum ground altitude; high-altitude flight is intentionally unrestricted up to the world safety limit.
+      // Minimum ground altitude and ceiling clamp
       if (planePos.current.y <= 0.6) {
         planePos.current.y = 0.6;
         if (planeRot.current.x < 0) planeRot.current.x = 0;
       }
-      if (planePos.current.y > 1000) {
-        planePos.current.y = 1000;
+      if (planePos.current.y > 90) {
+        planePos.current.y = 90;
         if (planeRot.current.x > 0) planeRot.current.x = 0;
       }
 
@@ -1870,13 +1838,12 @@ export default function App() {
   const [isSplashScreenOpen, setIsSplashScreenOpen] = useState(true);
   const [isFlying, setIsFlying] = useState(false);
   const [isEntryScreenOpen, setIsEntryScreenOpen] = useState(true);
-  const [isGameMenuOpen, setIsGameMenuOpen] = useState(false);
   // Touch-drag steering: drag across the flight view to steer the 2D aircraft image.
   const screenDragPointerId = useRef<number | null>(null);
   const screenDragOrigin = useRef({ x: 0, y: 0 });
   const handleFlightDragStart = (e: React.PointerEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
-    if (isEntryScreenOpen || isGameMenuOpen || target.closest('[data-no-fullscreen],button,[role="button"]')) return;
+    if (isEntryScreenOpen || target.closest('[data-no-fullscreen],button,[role="button"]')) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     screenDragPointerId.current = e.pointerId;
     screenDragOrigin.current = { x: e.clientX, y: e.clientY };
@@ -1906,7 +1873,7 @@ export default function App() {
   const [activePlaneId, setActivePlaneId] = useState(0);
   const handlePlaneSelected = React.useCallback((planeId: number) => setActivePlaneId(planeId), []);
   const planePaint = [
-    { body: '#B91C1C', wing: '#7F1D1D' },
+    { body: '#E11D48', wing: '#991B1B' },
     { body: '#64748B', wing: '#334155' },
     { body: '#0F172A', wing: '#38BDF8' },
     { body: '#D6D3D1', wing: '#78716C' },
@@ -1965,9 +1932,7 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (isGameMenuOpen) setIsGameMenuOpen(false);
-        else if (isFlying && !isEntryScreenOpen) setIsGameMenuOpen(true);
-        else setIsEntryScreenOpen((prev) => !prev);
+        setIsEntryScreenOpen((prev) => !prev);
       }
       if (e.key === 'd' || e.key === 'D') {
         setIsDiagnosticsOpen((prev) => !prev);
@@ -2041,7 +2006,7 @@ export default function App() {
       window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('blur', handleBlur);
     };
-  }, [isFlying, isEntryScreenOpen, isGameMenuOpen]);
+  }, [isFlying, isEntryScreenOpen]);
 
   return (
     <div
@@ -2065,7 +2030,7 @@ export default function App() {
           camera={{ position: [0, 2.5, 36], fov: 55, far: 650 }}
         >
           <FlightScene
-            isFlying={isFlying && !isGameMenuOpen}
+            isFlying={isFlying}
             turnInputRef={turnInputRef}
             pitchInputRef={pitchInputRef}
             isShootingRef={isShootingRef}
@@ -2117,33 +2082,40 @@ export default function App() {
       {/* In-Flight Mobile App Top Bar (Active when in flight) */}
       {!isEntryScreenOpen && (
         <>
-          {/* Right: compact currency */}
-          <div className="absolute top-3 right-3 z-20 pointer-events-none flex items-center gap-2 rounded-full border border-amber-300/45 bg-slate-950/75 px-3 py-2 text-amber-100 shadow-lg backdrop-blur-md">
-            <Coins className="h-4 w-4 text-amber-300" />
-            <span className="hidden text-[10px] font-semibold sm:inline">מטבעות</span>
-            <span className="font-mono text-xs font-black tabular-nums text-amber-300 sm:text-sm">{coins.toLocaleString('he-IL')}</span>
+          {/* Top Left: Return to App Menu & Auto-Diagnostics */}
+          <div className="absolute top-3 left-3 pointer-events-auto z-20 flex items-center gap-2">
+            <button
+              onClick={() => setIsEntryScreenOpen(true)}
+              data-no-fullscreen="true"
+              title="חזרה לתפריט האפליקציה"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-950/90 backdrop-blur-md border border-rose-500/60 hover:border-rose-400 text-rose-300 hover:text-white transition shadow-lg active:scale-95 font-tactical text-xs"
+            >
+              <Menu className="w-3.5 h-3.5 text-rose-400" />
+              <span>תפריט</span>
+            </button>
+            <DiagnosticHUDButton className="" onOpen={() => setIsDiagnosticsOpen(true)} />
           </div>
 
-          {/* Center: score and confirmed takedowns only */}
-          <div className="absolute top-3 left-1/2 z-20 flex -translate-x-1/2 pointer-events-none items-center gap-3 rounded-2xl border border-slate-400/25 bg-slate-950/75 px-3 py-2 text-[11px] shadow-lg backdrop-blur-md sm:gap-4 sm:px-4">
-            <div className="flex min-w-0 items-center gap-1.5 text-amber-300">
-              <Trophy className="h-4 w-4 shrink-0" />
-              <span className="font-mono font-bold tabular-nums">{score.toLocaleString('he-IL')}</span>
+          {/* Top Center: score, kills, and the same persistent shop currency */}
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 pointer-events-none z-20 flex max-w-[58vw] items-center gap-2 sm:gap-3 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-slate-950/90 backdrop-blur-md border border-slate-700 text-[10px] sm:text-xs font-mono shadow-md whitespace-nowrap">
+            <div className="flex items-center gap-1 text-amber-400">
+              <Trophy className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span>{score.toLocaleString()}</span>
             </div>
-            <span className="h-5 w-px bg-slate-500/60" />
-            <div className="flex items-center gap-1.5 text-rose-300">
-              <Crosshair className="h-4 w-4 shrink-0" />
-              <span className="font-mono font-bold tabular-nums">{aerialHits}</span>
-              <span className="hidden text-slate-300 sm:inline">הפלות</span>
+            <span className="text-slate-600">|</span>
+            <div className="flex items-center gap-1 text-rose-400">
+              <Crosshair className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span>{aerialHits} הפלות</span>
+            </div>
+            <span className="text-slate-600">|</span>
+            <div className="flex items-center gap-1 text-emerald-300">
+              <Coins className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span>₪ {coins.toLocaleString()}</span>
             </div>
           </div>
 
-          {/* Left: three-dot menu beside radar */}
+          {/* Top Right: High-Performance Tactical Radar */}
           <TacticalRadar />
-          <button type="button" data-no-fullscreen="true" aria-label="פתיחת תפריט המשחק" title="תפריט המשחק" onClick={() => setIsGameMenuOpen(true)}
-            className="absolute top-3 left-[4.25rem] z-30 flex h-11 w-11 items-center justify-center rounded-full border border-slate-300/35 bg-slate-950/75 text-slate-100 shadow-lg backdrop-blur-md transition active:scale-90 hover:border-sky-300/70 hover:bg-slate-800/90 focus:outline-none focus:ring-2 focus:ring-sky-300">
-            <MoreVertical className="h-5 w-5" />
-          </button>
         </>
       )}
 
@@ -2167,7 +2139,7 @@ export default function App() {
 
       {/* Bottom Controls: Virtual Joystick + Weapons Trigger (Active only during flight/gameplay) */}
       {!isEntryScreenOpen && (
-        <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 flex items-end justify-between pointer-events-none z-20">
+        <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between pointer-events-none z-20">
           {/* Left: Virtual Joystick ("רק הדבר הכחול שמוזיזים אותו") */}
           <div className="pointer-events-auto" data-no-fullscreen="true">
             <VirtualJoystick
@@ -2212,10 +2184,10 @@ export default function App() {
               className="w-13 h-13 md:w-14 md:h-14 rounded-full flex items-center justify-center select-none transition-transform active:scale-95 text-white"
               style={{
                 touchAction: 'none',
-                backgroundColor: 'rgba(185, 28, 28, 0.78)',
+                backgroundColor: '#DC2626',
                 border: '2px solid rgba(254, 202, 202, 0.85)',
                 boxShadow:
-                  '0 0 14px rgba(220, 38, 38, 0.38), inset 0 2px 4px rgba(255,255,255,0.28), inset 0 -3px 6px rgba(0,0,0,0.5)',
+                  '0 0 20px rgba(220, 38, 38, 0.65), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -3px 6px rgba(0,0,0,0.5)',
               }}
             >
               <div className="relative flex items-center justify-center pointer-events-none">
@@ -2223,29 +2195,6 @@ export default function App() {
                 <div className="absolute w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_6px_#FFFFFF]" />
               </div>
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* Responsive aerospace pause menu */}
-      {isGameMenuOpen && !isEntryScreenOpen && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#020814]/65 p-4 backdrop-blur-[3px]" role="dialog" aria-modal="true" aria-labelledby="game-menu-title" onPointerDown={(e) => e.stopPropagation()}>
-          <div className="relative w-full max-w-[360px] overflow-hidden rounded-[22px] border border-sky-200/25 bg-gradient-to-b from-[#23364a]/95 via-[#101e30]/97 to-[#060d17]/98 p-5 text-right text-white shadow-[0_20px_70px_rgba(0,0,0,0.65)] sm:p-6">
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-l from-amber-300 via-sky-300 to-slate-400" />
-            <div className="pointer-events-none absolute inset-0 opacity-[0.08]" style={{backgroundImage:'linear-gradient(rgba(148,163,184,.6) 1px, transparent 1px),linear-gradient(90deg,rgba(148,163,184,.6) 1px,transparent 1px)',backgroundSize:'24px 24px'}} />
-            <button type="button" data-no-fullscreen="true" aria-label="סגירת התפריט" onClick={() => setIsGameMenuOpen(false)} className="absolute left-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-slate-300/20 bg-slate-950/60 text-slate-200 transition hover:bg-slate-700/80 active:scale-90"><X className="h-4 w-4" /></button>
-            <div className="relative mb-5 flex flex-col items-center border-b border-slate-300/15 pb-5 pt-2">
-              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-sky-200/35 bg-sky-300/10 text-sky-200"><MoreVertical className="h-7 w-7" /></div>
-              <div className="text-[10px] font-bold tracking-[0.28em] text-sky-200/65">WINGS OF ISRAEL • FLIGHT CONTROL</div>
-              <h2 id="game-menu-title" className="mt-1 text-xl font-black tracking-wide sm:text-2xl">תפריט טיסה</h2>
-              <p className="mt-1 text-xs text-slate-300/75">הטיסה מושהית עד לחזרה למשחק</p>
-            </div>
-            <div className="relative flex flex-col gap-2.5">
-              <button type="button" data-no-fullscreen="true" onClick={() => setIsGameMenuOpen(false)} className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-emerald-200/40 bg-gradient-to-b from-emerald-300 to-emerald-500 px-4 py-3 font-black text-slate-950 transition active:scale-[0.98]"><Play className="h-5 w-5" /> חזרה למשחק</button>
-              <button type="button" data-no-fullscreen="true" onClick={() => { setIsGameMenuOpen(false); setIsFlying(false); setIsEntryScreenOpen(true); turnInputRef.current = 0; pitchInputRef.current = 0; isShootingRef.current = false; screenDragPointerId.current = null; }} className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-sky-200/25 bg-slate-800/80 px-4 py-3 font-bold text-slate-100 transition hover:border-sky-200/55 hover:bg-slate-700/90 active:scale-[0.98]"><Home className="h-5 w-5 text-sky-200" /> חזרה למסך הבית</button>
-              <button type="button" data-no-fullscreen="true" onClick={() => { setIsGameMenuOpen(false); setIsFlying(false); setIsEntryScreenOpen(true); turnInputRef.current = 0; pitchInputRef.current = 0; isShootingRef.current = false; screenDragPointerId.current = null; }} className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-amber-200/20 bg-amber-200/5 px-4 py-2.5 font-semibold text-amber-100/90 transition hover:border-amber-200/45 hover:bg-amber-200/10 active:scale-[0.98]"><LogOut className="h-4 w-4" /> יציאה מהטיסה</button>
-            </div>
-            <p className="relative mt-4 text-center text-[10px] leading-4 text-slate-400">המשחק פועל בתוך הדפדפן. יציאה מהטיסה מחזירה למסך הבית ושומרת את יתרת המטבעות.</p>
           </div>
         </div>
       )}
