@@ -182,58 +182,51 @@ export function GameEntryScreen({
             2. AIRCRAFT SHOP SCREEN (חנות מטוסים עם גלילה מלאה)
            ========================================== */}
         {activeTab === 'shop' && (
-          <section dir="rtl" className="absolute inset-0 overflow-hidden text-white" aria-label="חנות מטוסים">
-            <img src={`${import.meta.env.BASE_URL}src/assets/images/wings_entry_runway_1791662090999.jpg`} alt="" className="absolute inset-0 h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/55 via-sky-950/25 to-slate-950/65" />
-            {/* Keep the original entry-screen artwork at the top; do not replace it with a new shop header. */}
-
-            <div className="absolute left-[12%] right-[12%] top-[15%] bottom-[27%] z-10 overflow-hidden rounded-[28px] border-[5px] border-slate-300/80 bg-slate-800/65 shadow-[inset_0_0_22px_rgba(125,211,252,.25),0_10px_30px_rgba(0,0,0,.65)]">
-              <div className="absolute left-[12%] right-[12%] top-[-2%] z-20 rounded-b-2xl border-x-4 border-b-4 border-slate-300/80 bg-gradient-to-b from-slate-600 to-slate-900 px-2 py-2 text-center text-xl font-black shadow-xl">חנות מטוסים</div>
-              <div className="absolute inset-0 bg-gradient-to-b from-sky-200/10 via-slate-900/10 to-slate-950/75" />
-              <div className="absolute left-2 right-2 top-[12%] h-[48%] overflow-hidden rounded-xl border border-slate-300/40 bg-transparent">
-                <img
-                  src={['https://commons.wikimedia.org/wiki/Special:FilePath/M-346.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-16I_sufa.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-F-35I-Adir.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-2014-Museum_0083-Nesher-1.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-4_Phantom_II.jpg?width=1000','https://commons.wikimedia.org/wiki/Special:FilePath/F-15I_Ra%27am.jpg?width=1000'][selectedPlane]}
-                  alt={planes[selectedPlane].name}
-                  className="absolute inset-0 h-full w-full object-contain"
-                  loading="eager"
-                  referrerPolicy="no-referrer"
-                  onError={(e)=>{e.currentTarget.style.opacity='0';}}
-                />
-              </div>
-              <div className="absolute left-3 right-3 top-[61%] flex items-center justify-between gap-2 border-b border-slate-300/30 pb-1">
-                <div className="min-w-0"><div className="text-[9px] text-sky-200">דגם מטוס</div><h3 className="truncate text-sm font-black drop-shadow sm:text-lg">{planes[selectedPlane].name}</h3></div>
-                <div className="shrink-0 text-left"><div className="text-[9px] text-slate-200">מחיר רכישה</div><div className="text-base font-black text-amber-300 sm:text-lg">₪ {planes[selectedPlane].price.toLocaleString()}</div></div>
-              </div>
-              <div className="absolute left-3 right-3 top-[68%] grid grid-cols-[1fr_1.05fr] gap-2">
-                <p className="text-[9px] leading-4 text-slate-100/95 sm:text-xs">מטוס קרב ואימון מתקדם. מבנה אווירודינמי, ביצועים מאוזנים ויכולת תמרון למשימות אימון וטיסה.</p>
-                <div className="space-y-2">
-                  {([{label:'מהירות',value:planes[selectedPlane].speed,icon:'➤'},{label:'תמרון',value:planes[selectedPlane].maneuver,icon:'↻'},{label:'כוח אש',value:planes[selectedPlane].fire,icon:'✦'}] as const).map(stat => <div key={stat.label} className="flex items-center gap-1"><span className="w-[58px] shrink-0 text-[9px] font-bold text-slate-100 sm:text-xs">{stat.icon} {stat.label}</span><div className="h-2 flex-1 overflow-hidden rounded-sm border border-slate-300/60 bg-slate-950/80"><div className="h-full bg-gradient-to-r from-sky-300 via-cyan-200 to-slate-100 shadow-[0_0_8px_rgba(125,211,252,.7)]" style={{width:stat.value+'%'}} /></div></div>)}
-                </div>
-              </div>
-            </div>
-
-            <div className="absolute bottom-[17%] left-1/2 z-30 w-[62%] -translate-x-1/2">
-              {ownedPlanes.includes(selectedPlane) ? (
-                <button onClick={() => { setEquippedPlane(selectedPlane); setActiveTab('main'); }} className="w-full rounded-2xl border-[4px] border-slate-200 bg-gradient-to-b from-slate-500 via-slate-700 to-slate-900 px-3 py-3 text-lg font-black shadow-[0_5px_0_#111827,0_0_18px_rgba(125,211,252,.35)] active:translate-y-1">{equippedPlane===selectedPlane?'✓ המטוס הפעיל שלך':'בחר מטוס'}</button>
-              ) : (
-                <button onClick={() => { const plane=planes[selectedPlane]; if(coins<plane.price){alert('אין מספיק מטבעות. נדרשים עוד ₪ '+(plane.price-coins).toLocaleString());return;} onCoinsChange(value=>value-plane.price); setOwnedPlanes(prev=>prev.includes(selectedPlane)?prev:[...prev,selectedPlane]); setEquippedPlane(selectedPlane); }} className="w-full rounded-2xl border-[4px] border-slate-200 bg-gradient-to-b from-slate-500 via-slate-700 to-slate-900 px-3 py-3 text-xl font-black text-white shadow-[0_5px_0_#111827,0_0_18px_rgba(125,211,252,.35)] active:translate-y-1">קנה · ₪ {planes[selectedPlane].price.toLocaleString()}</button>
-              )}
-            </div>
-
-            <div className="absolute bottom-[2%] left-0 right-0 z-20 flex gap-2 overflow-x-auto px-3 pb-1 snap-x">
-              {planes.map((p,idx) => {
-                const isOwned=ownedPlanes.includes(idx), isSelected=selectedPlane===idx;
-                return <button type="button" key={p.id} onClick={()=>setSelectedPlane(idx)} className={'relative min-w-[31%] flex-1 snap-center rounded-2xl border-[3px] p-2 text-center shadow-[0_5px_10px_rgba(0,0,0,.55)] transition active:scale-95 '+(isSelected?'border-sky-200 bg-gradient-to-b from-sky-900/95 to-slate-950 ring-2 ring-sky-300/60':'border-slate-400/80 bg-gradient-to-b from-slate-700/95 to-slate-950/95')}>
-                  <div className="truncate text-xs font-black">{p.name}</div>
-                  <div className="my-1 flex h-12 items-center justify-center overflow-hidden rounded-lg bg-slate-950/50"><img src={['https://commons.wikimedia.org/wiki/Special:FilePath/M-346.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/F-16I_sufa.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-F-35I-Adir.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/IAF-2014-Museum_0083-Nesher-1.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/F-4_Phantom_II.jpg?width=400','https://commons.wikimedia.org/wiki/Special:FilePath/F-15I_Ra%27am.jpg?width=400'][idx]} alt={p.name} loading="lazy" referrerPolicy="no-referrer" className="h-full w-full object-contain" /></div>
-                  <div className={'text-[10px] font-black '+(isOwned?'text-emerald-300':'text-slate-100')}>{isOwned?'נרכש':'₪ '+p.price.toLocaleString()}</div>
-                  {isSelected && <div className="mt-1 text-[10px] font-black text-emerald-300">נבחר</div>}
-                </button>;
-              })}
+          <section dir="rtl" className="absolute inset-0 overflow-hidden bg-[#17283a] text-white" aria-label="חנות מטוסים">
+            <img src="https://i.postimg.cc/MKJp7Lmv/Gemini-Generated-Image-fcqd5zfcqd5zfcqd.jpg" alt="חנות מטוסים Wings of Israel" className="absolute inset-0 h-full w-full object-fill select-none pointer-events-none" draggable={false} />
+            {/* Interactive hotspots are layered over the supplied reference artwork; the screenshot itself is not the only interaction. */}
+            <button type="button" onClick={() => setActiveTab('main')} aria-label="חזור" className="absolute z-20 rounded-xl active:scale-95" style={{left:'0%',top:'27%',width:'12%',height:'10%',touchAction:'manipulation'}} />
+            <button type="button" onClick={() => setActiveTab('main')} aria-label="חזור לתפריט" className="absolute z-20 rounded-xl active:scale-95" style={{left:'0%',top:'27%',width:'12%',height:'10%',touchAction:'manipulation'}} />
+            {planes.map((p, idx) => {
+              const positions = [
+                {left:'9%', width:'24%'},
+                {left:'34%', width:'23%'},
+                {left:'58%', width:'23%'},
+                {left:'81%', width:'19%'},
+                {left:'-15%', width:'23%'},
+                {left:'-39%', width:'23%'},
+              ];
+              const pos = positions[idx];
+              return <button key={p.id} type="button" onClick={() => setSelectedPlane(idx)} aria-label={'בחר '+p.name}
+                className="absolute z-20 rounded-xl active:scale-95"
+                style={{left:pos.left,bottom:'12%',width:pos.width,height:'19%',touchAction:'manipulation'}} />;
+            })}
+            {/* Real, state-driven purchase/selection action over the illustrated button */}
+            <button type="button"
+              onClick={() => {
+                const plane = planes[selectedPlane];
+                if (ownedPlanes.includes(selectedPlane)) {
+                  setEquippedPlane(selectedPlane);
+                  setActiveTab('main');
+                  return;
+                }
+                if (coins < plane.price) {
+                  alert('אין מספיק מטבעות. נדרשים עוד ₪ ' + (plane.price - coins).toLocaleString());
+                  return;
+                }
+                onCoinsChange(value => value - plane.price);
+                setOwnedPlanes(prev => prev.includes(selectedPlane) ? prev : [...prev, selectedPlane]);
+                setEquippedPlane(selectedPlane);
+              }}
+              aria-label={ownedPlanes.includes(selectedPlane) ? 'בחר מטוס' : 'קנה מטוס'}
+              className="absolute z-30 rounded-2xl active:scale-95"
+              style={{left:'31%',top:'64%',width:'38%',height:'9%',touchAction:'manipulation'}} />
+            {/* Accessible dynamic status, kept visually unobtrusive to preserve the reference layout */}
+            <div className="absolute z-10 bottom-[1%] right-2 rounded bg-slate-950/80 px-2 py-1 text-[10px] text-white/90 pointer-events-none">
+              {planes[selectedPlane].name} · {ownedPlanes.includes(selectedPlane) ? 'נרכש' : '₪ '+planes[selectedPlane].price.toLocaleString()}
             </div>
           </section>
         )}
-
         {/* ==========================================
             3. UPGRADES WORKSHOP SCREEN (מרכז שדרוגים עם גלילה מלאה)
            ========================================== */}
