@@ -6,7 +6,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Canvas, useFrame, useThree, useLoader } from '@react-three/fiber';
 import { Sky, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import { Crosshair, ShieldCheck, Wrench, AlertTriangle, RefreshCw, Trophy, Coins } from 'lucide-react';
+import { Crosshair, ShieldCheck, Wrench, AlertTriangle, RefreshCw, Trophy, Coins, MoreVertical, X, Home, Play, LogOut } from 'lucide-react';
 import { FlightErrorBoundary } from './components/FlightErrorBoundary';
 import { DiagnosticReportModal } from './components/DiagnosticReportModal';
 import { GameEntryScreen } from './components/GameEntryScreen';
@@ -1870,6 +1870,7 @@ export default function App() {
   const [isSplashScreenOpen, setIsSplashScreenOpen] = useState(true);
   const [isFlying, setIsFlying] = useState(false);
   const [isEntryScreenOpen, setIsEntryScreenOpen] = useState(true);
+  const [isGameMenuOpen, setIsGameMenuOpen] = useState(false);
   // Touch-drag steering: drag across the flight view to steer the 2D aircraft image.
   const screenDragPointerId = useRef<number | null>(null);
   const screenDragOrigin = useRef({ x: 0, y: 0 });
@@ -1964,7 +1965,9 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setIsEntryScreenOpen((prev) => !prev);
+        if (isGameMenuOpen) setIsGameMenuOpen(false);
+        else if (isFlying && !isEntryScreenOpen) setIsGameMenuOpen(true);
+        else setIsEntryScreenOpen((prev) => !prev);
       }
       if (e.key === 'd' || e.key === 'D') {
         setIsDiagnosticsOpen((prev) => !prev);
@@ -2038,7 +2041,7 @@ export default function App() {
       window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('blur', handleBlur);
     };
-  }, [isFlying, isEntryScreenOpen]);
+  }, [isFlying, isEntryScreenOpen, isGameMenuOpen]);
 
   return (
     <div
@@ -2133,8 +2136,18 @@ export default function App() {
             </div>
           </div>
 
-          {/* Top Right: High-Performance Tactical Radar */}
+          {/* Top Right: Tactical radar and a consistent three-dot game menu */}
           <TacticalRadar />
+          <button
+            type="button"
+            data-no-fullscreen="true"
+            aria-label="פתיחת תפריט המשחק"
+            title="תפריט המשחק"
+            onClick={() => setIsGameMenuOpen(true)}
+            className="absolute top-3 right-[4.25rem] z-30 flex h-12 w-10 items-center justify-center rounded-xl border border-slate-500/60 bg-slate-950/90 text-slate-100 shadow-lg backdrop-blur-md transition active:scale-95 hover:border-emerald-400 hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+          >
+            <MoreVertical className="h-6 w-6" />
+          </button>
         </>
       )}
 
@@ -2214,6 +2227,83 @@ export default function App() {
                 <div className="absolute w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_6px_#FFFFFF]" />
               </div>
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Responsive in-game pause / exit menu */}
+      {isGameMenuOpen && !isEntryScreenOpen && (
+        <div
+          className="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="game-menu-title"
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <div className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-emerald-400/40 bg-slate-950/95 p-5 text-right text-slate-100 shadow-[0_0_45px_rgba(16,185,129,0.18)] sm:p-7">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-sky-400 via-emerald-400 to-amber-300" />
+            <button
+              type="button"
+              data-no-fullscreen="true"
+              aria-label="סגירת התפריט"
+              onClick={() => setIsGameMenuOpen(false)}
+              className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-slate-300 transition hover:bg-slate-800 hover:text-white active:scale-95"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <div className="mb-5 flex flex-col items-center pt-3">
+              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-400/40 bg-emerald-400/10 text-emerald-300 shadow-[0_0_24px_rgba(16,185,129,0.12)]">
+                <MoreVertical className="h-7 w-7" />
+              </div>
+              <h2 id="game-menu-title" className="text-xl font-black tracking-wide sm:text-2xl">תפריט המשחק</h2>
+              <p className="mt-1 text-sm text-slate-400">הטיסה מושהית בזמן שהתפריט פתוח</p>
+            </div>
+            <div className="flex flex-col gap-3">
+              <button
+                type="button"
+                data-no-fullscreen="true"
+                onClick={() => setIsGameMenuOpen(false)}
+                className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-emerald-400/50 bg-emerald-500/15 px-4 py-3 font-bold text-emerald-200 transition hover:bg-emerald-500/25 active:scale-[0.98]"
+              >
+                <Play className="h-5 w-5" />
+                חזרה למשחק
+              </button>
+              <button
+                type="button"
+                data-no-fullscreen="true"
+                onClick={() => {
+                  setIsGameMenuOpen(false);
+                  setIsFlying(false);
+                  setIsEntryScreenOpen(true);
+                  turnInputRef.current = 0;
+                  pitchInputRef.current = 0;
+                  isShootingRef.current = false;
+                  screenDragPointerId.current = null;
+                }}
+                className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-sky-400/40 bg-sky-500/10 px-4 py-3 font-bold text-sky-200 transition hover:bg-sky-500/20 active:scale-[0.98]"
+              >
+                <Home className="h-5 w-5" />
+                יציאה למסך הראשי
+              </button>
+              <button
+                type="button"
+                data-no-fullscreen="true"
+                onClick={() => {
+                  setIsGameMenuOpen(false);
+                  setIsFlying(false);
+                  setIsEntryScreenOpen(true);
+                  turnInputRef.current = 0;
+                  pitchInputRef.current = 0;
+                  isShootingRef.current = false;
+                  screenDragPointerId.current = null;
+                }}
+                className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-rose-400/35 bg-rose-500/10 px-4 py-2.5 font-semibold text-rose-200 transition hover:border-rose-400/60 hover:bg-rose-500/20 active:scale-[0.98]"
+              >
+                <LogOut className="h-4 w-4" />
+                יציאה מהמשחק
+              </button>
+            </div>
+            <p className="mt-4 text-center text-xs leading-5 text-slate-500">המשחק פועל בתוך הדפדפן, לכן יציאה מחזירה למסך הראשי של המשחק במקום לסגור את אפליקציית הדפדפן.</p>
           </div>
         </div>
       )}
