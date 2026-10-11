@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { User, Coins, ShieldCheck, Zap, Crosshair, Gauge } from 'lucide-react';
-import shopReferenceImage from '../assets/images/wings_shop_exact_new_1791676618855.jpg';
+import { User, Coins, ShieldCheck } from 'lucide-react';
 import upgradesFallbackImage from '../assets/images/wings_upgrades_exact_new_1791676639538.jpg';
 
 
