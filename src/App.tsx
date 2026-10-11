@@ -6,7 +6,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Canvas, useFrame, useThree, useLoader } from '@react-three/fiber';
 import { Sky, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import { Crosshair, ShieldCheck, Wrench, AlertTriangle, RefreshCw, Menu, Trophy, Coins } from 'lucide-react';
+import { Crosshair, ShieldCheck, Wrench, AlertTriangle, RefreshCw, Trophy, Coins } from 'lucide-react';
 import { FlightErrorBoundary } from './components/FlightErrorBoundary';
 import { DiagnosticReportModal } from './components/DiagnosticReportModal';
 import { GameEntryScreen } from './components/GameEntryScreen';
@@ -2082,17 +2082,8 @@ export default function App() {
       {/* In-Flight Mobile App Top Bar (Active when in flight) */}
       {!isEntryScreenOpen && (
         <>
-          {/* Top Left: Return to App Menu & Auto-Diagnostics */}
-          <div className="absolute top-3 left-3 pointer-events-auto z-20 flex items-center gap-2">
-            <button
-              onClick={() => setIsEntryScreenOpen(true)}
-              data-no-fullscreen="true"
-              title="חזרה לתפריט האפליקציה"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-950/90 backdrop-blur-md border border-rose-500/60 hover:border-rose-400 text-rose-300 hover:text-white transition shadow-lg active:scale-95 font-tactical text-xs"
-            >
-              <Menu className="w-3.5 h-3.5 text-rose-400" />
-              <span>תפריט</span>
-            </button>
+          {/* Top Left: Auto-Diagnostics only; the in-flight menu button is intentionally removed. */}
+          <div className="absolute top-3 left-3 pointer-events-auto z-20">
             <DiagnosticHUDButton className="" onOpen={() => setIsDiagnosticsOpen(true)} />
           </div>
 
