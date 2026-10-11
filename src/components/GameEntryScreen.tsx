@@ -326,7 +326,7 @@ export function GameEntryScreen({
                 <div className="absolute bottom-[8%] h-[28%] w-[120%] -rotate-6 border-t-2 border-cyan-200/30 bg-gradient-to-b from-slate-400/20 to-slate-950/70" />
                 <div className="absolute top-[13%] right-[12%] text-right"><div className="text-xs font-bold tracking-[0.25em] text-white/55">IAF • ISRAEL</div><div className="text-2xl font-black text-white/80">0{selectedPlane+1}</div></div>
                 <div className="relative z-[1] w-full px-[2%] text-center">
-                  <div className="h-[clamp(150px,34vh,330px)] w-full drop-shadow-[0_20px_18px_rgba(0,0,0,0.65)]"><AircraftPreview3D planeIndex={selectedPlane} /></div>            </svg>
+                  <div className="h-[clamp(150px,34vh,330px)] w-full drop-shadow-[0_20px_18px_rgba(0,0,0,0.65)]"><AircraftPreview3D planeIndex={selectedPlane} /></div>
                   <div className="mt-[-1%] text-xs font-black tracking-[0.25em] text-white/60">M-346 • לביא</div>
                 </div>
               </div>
