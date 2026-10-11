@@ -368,12 +368,14 @@ export function GameEntryScreen({
             {/* Master Upgrade Button (שדרוג כללי) */}
             <button
               onClick={() => {
-                const totalCost = 5000;
-                if (coins >= totalCost) {
+                const totalCost = (upgrades.engine < 5 ? 5000 : 0) + (upgrades.avionics < 4 ? 3500 : 0) + (upgrades.weapons < 3 ? 7500 : 0) + (upgrades.armor < 5 ? 4200 : 0);
+                if (totalCost === 0) {
+                  alert('כל המערכות כבר ברמה המרבית.');
+                } else if (coins >= totalCost) {
                   onCoinsChange((c) => c - totalCost);
                   setUpgrades({ engine: 5, avionics: 4, weapons: 3, armor: 5 });
                 } else {
-                  alert('אין מספיק מטבעות לשדרוג כולל!');
+                  alert('אין מספיק מטבעות לשדרוג כולל. נדרשים ' + totalCost.toLocaleString('he-IL') + ' מטבעות.');
                 }
               }}
               data-no-fullscreen="true"
@@ -400,10 +402,11 @@ export function GameEntryScreen({
             <button
               onClick={() => {
                 const cost = 5000;
-                if (upgrades.engine < 5 && coins >= cost) {
+                if (upgrades.engine >= 5) alert('המנוע כבר ברמה המרבית.');
+                else if (coins >= cost) {
                   onCoinsChange((c) => c - cost);
                   setUpgrades((prev) => ({ ...prev, engine: prev.engine + 1 }));
-                }
+                } else alert('אין מספיק מטבעות לשדרוג המנוע. נדרשים 5,000 מטבעות.');
               }}
               data-no-fullscreen="true"
               aria-label="שדרוג מנוע סילון"
@@ -413,10 +416,11 @@ export function GameEntryScreen({
             <button
               onClick={() => {
                 const cost = 3500;
-                if (upgrades.avionics < 4 && coins >= cost) {
+                if (upgrades.avionics >= 4) alert('מערכות האוויוניקה כבר ברמה המרבית.');
+                else if (coins >= cost) {
                   onCoinsChange((c) => c - cost);
                   setUpgrades((prev) => ({ ...prev, avionics: prev.avionics + 1 }));
-                }
+                } else alert('אין מספיק מטבעות לשדרוג האוויוניקה. נדרשים 3,500 מטבעות.');
               }}
               data-no-fullscreen="true"
               aria-label="שדרוג מערכות אווירוניקה"
@@ -426,10 +430,11 @@ export function GameEntryScreen({
             <button
               onClick={() => {
                 const cost = 7500;
-                if (upgrades.weapons < 3 && coins >= cost) {
+                if (upgrades.weapons >= 3) alert('החימוש כבר ברמה המרבית.');
+                else if (coins >= cost) {
                   onCoinsChange((c) => c - cost);
                   setUpgrades((prev) => ({ ...prev, weapons: prev.weapons + 1 }));
-                }
+                } else alert('אין מספיק מטבעות לשדרוג החימוש. נדרשים 7,500 מטבעות.');
               }}
               data-no-fullscreen="true"
               aria-label="שדרוג חימוש משודרג"
@@ -439,10 +444,11 @@ export function GameEntryScreen({
             <button
               onClick={() => {
                 const cost = 4200;
-                if (upgrades.armor < 5 && coins >= cost) {
+                if (upgrades.armor >= 5) alert('השריון כבר ברמה המרבית.');
+                else if (coins >= cost) {
                   onCoinsChange((c) => c - cost);
                   setUpgrades((prev) => ({ ...prev, armor: prev.armor + 1 }));
-                }
+                } else alert('אין מספיק מטבעות לשדרוג השריון. נדרשים 4,200 מטבעות.');
               }}
               data-no-fullscreen="true"
               aria-label="שדרוג שריון מחוזק"
