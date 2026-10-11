@@ -1252,7 +1252,7 @@ function FlightScene({
       !isFinite(planeRot.current.y) ||
       !isFinite(planeRot.current.z) ||
       planePos.current.y < 0.2 ||
-      planePos.current.y > 140 ||
+      planePos.current.y > 1200 ||
       Math.abs(planePos.current.x) > 550 ||
       Math.abs(planePos.current.z) > 550
     ) {
@@ -1457,10 +1457,9 @@ function FlightScene({
       // We clamp pitch and allow smooth attitude holding without snapping down!
       if (Math.abs(pitchInput) > 0.02) {
         planeRot.current.x = THREE.MathUtils.lerp(planeRot.current.x, pitchInput * 0.48, dt * 3.8);
-      } else {
-        // Very gentle aerodynamic trim to horizon (does NOT jerk the plane down)
-        planeRot.current.x = THREE.MathUtils.lerp(planeRot.current.x, 0, dt * 0.5);
       }
+      // When the stick is released, preserve the current pitch attitude.
+      // This prevents automatic nose-down trimming while the player is climbing.
 
       // Direct 3D flight vector aligned with heading and pitch
       const heading = planeRot.current.y;
@@ -1475,13 +1474,13 @@ function FlightScene({
       planePos.current.y += forwardDir.y * currentSpeed.current * dt;
       planePos.current.z += forwardDir.z * currentSpeed.current * dt;
 
-      // Minimum ground altitude and ceiling clamp
+      // Minimum ground altitude; high-altitude flight is intentionally unrestricted up to the world safety limit.
       if (planePos.current.y <= 0.6) {
         planePos.current.y = 0.6;
         if (planeRot.current.x < 0) planeRot.current.x = 0;
       }
-      if (planePos.current.y > 90) {
-        planePos.current.y = 90;
+      if (planePos.current.y > 1000) {
+        planePos.current.y = 1000;
         if (planeRot.current.x > 0) planeRot.current.x = 0;
       }
 
