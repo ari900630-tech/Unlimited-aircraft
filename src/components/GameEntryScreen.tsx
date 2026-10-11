@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { User } from 'lucide-react';
+import shopReferenceImage from '../assets/images/wings_shop_exact_new_1791676618855.jpg';
 
 
 interface GameEntryScreenProps {
@@ -185,7 +186,7 @@ export function GameEntryScreen({
           <section aria-label="חנות מטוסים" className="absolute inset-0 overflow-hidden bg-[#17283a]">
             {/* The exact shop artwork is stored in this repository, so it does not depend on a third-party image host. */}
             <img
-              src={`${import.meta.env.BASE_URL}src/assets/images/wings_shop_exact_new_1791676618855.jpg`}
+              src={shopReferenceImage}
               alt="חנות המטוסים Wings of Israel"
               className="absolute inset-0 h-full w-full object-fill select-none pointer-events-none"
               draggable={false}
