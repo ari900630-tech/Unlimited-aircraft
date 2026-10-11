@@ -81,19 +81,7 @@ export function GameEntryScreen({
     return () => window.clearTimeout(timer);
   }, [notice]);
 
-  useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('unlimited-aircraft-upgrades') || 'null');
-      if (saved && typeof saved === 'object') {
-        setUpgrades((current) => ({
-          engine: Math.max(0, Math.min(5, Number(saved.engine ?? current.engine))),
-          avionics: Math.max(0, Math.min(4, Number(saved.avionics ?? current.avionics))),
-          weapons: Math.max(0, Math.min(3, Number(saved.weapons ?? current.weapons))),
-          armor: Math.max(0, Math.min(5, Number(saved.armor ?? current.armor))),
-        }));
-      }
-    } catch { /* Defaults are used for malformed saved data. */ }
-  }, []);
+
 
   if (!isOpen) return null;
 
