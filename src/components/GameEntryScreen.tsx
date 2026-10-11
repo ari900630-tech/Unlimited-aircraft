@@ -179,56 +179,80 @@ export function GameEntryScreen({
         )}
 
         {/* ==========================================
-            2. AIRCRAFT SHOP SCREEN (חנות מטוסים עם גלילה מלאה)
+            2. AIRCRAFT SHOP SCREEN (חנות מטוסים מדויקת לתמונה)
            ========================================== */}
         {activeTab === 'shop' && (
-          <section dir="rtl" className="absolute inset-0 overflow-hidden bg-[#17283a] text-white" aria-label="חנות מטוסים">
-            <img src="https://i.postimg.cc/MKJp7Lmv/Gemini-Generated-Image-fcqd5zfcqd5zfcqd.jpg" alt="חנות מטוסים Wings of Israel" className="absolute inset-0 h-full w-full object-fill select-none pointer-events-none" draggable={false} />
-            {/* Interactive hotspots are layered over the supplied reference artwork; the screenshot itself is not the only interaction. */}
-            <button type="button" onClick={() => setActiveTab('main')} aria-label="חזור" className="absolute z-20 rounded-xl active:scale-95" style={{left:'0%',top:'27%',width:'12%',height:'10%',touchAction:'manipulation'}} />
-            {planes.map((p, idx) => {
-              const positions = [
-                {left:'9%', width:'24%'},
-                {left:'34%', width:'23%'},
-                {left:'58%', width:'23%'},
-                {left:'81%', width:'19%'},
-                {left:'-15%', width:'23%'},
-                {left:'-39%', width:'23%'},
-              ];
-              const pos = positions[idx];
-              return <button key={p.id} type="button" onClick={() => setSelectedPlane(idx)} aria-label={'בחר '+p.name}
-                className="absolute z-20 rounded-xl active:scale-95"
-                style={{left:pos.left,bottom:'12%',width:pos.width,height:'19%',touchAction:'manipulation'}} />;
-            })}
-            {/* Real, state-driven purchase/selection action over the illustrated button */}
-            <button type="button"
+          <>
+            <img
+              src="/src/assets/images/wings_shop_exact_new_1791676618855.jpg"
+              alt="Aircraft Store"
+              referrerPolicy="no-referrer"
+              className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
+            />
+
+            {/* Top Bar Coin & Level Display */}
+            <div className="absolute top-3 left-4 text-xs font-bold text-cyan-300 font-mono">רמה 12</div>
+            <div className="absolute top-3 right-4 text-xs font-bold text-amber-400 font-mono">₪ {coins.toLocaleString()}</div>
+
+            {/* Back Button */}
+            <button
+              onClick={() => setActiveTab('main')}
+              data-no-fullscreen="true"
+              aria-label="חזור"
+              className="absolute cursor-pointer rounded-xl select-none focus:outline-none hover:bg-cyan-400/20 active:scale-95 border-0"
+              style={{ left: '8.5%', top: '10.5%', width: '15%', height: '6.5%', touchAction: 'manipulation' }}
+            />
+
+            {/* Buy / Equip Button (Interactive) */}
+            <button
               onClick={() => {
                 const plane = planes[selectedPlane];
-                if (ownedPlanes.includes(selectedPlane)) {
+                if (!ownedPlanes.includes(selectedPlane)) {
+                  if (coins >= plane.price) {
+                    onCoinsChange((c) => c - plane.price);
+                    setOwnedPlanes((prev) => [...prev, selectedPlane]);
+                  } else {
+                    alert('אין מספיק מטבעות מספיק בחשבון!');
+                  }
+                } else {
                   setEquippedPlane(selectedPlane);
                   setActiveTab('main');
-                  return;
                 }
-                if (coins < plane.price) {
-                  alert('אין מספיק מטבעות. נדרשים עוד ₪ ' + (plane.price - coins).toLocaleString());
-                  return;
-                }
-                onCoinsChange(value => value - plane.price);
-                setOwnedPlanes(prev => prev.includes(selectedPlane) ? prev : [...prev, selectedPlane]);
-                setEquippedPlane(selectedPlane);
               }}
-              aria-label={ownedPlanes.includes(selectedPlane) ? 'בחר מטוס' : 'קנה מטוס'}
-              className="absolute z-30 rounded-2xl active:scale-95"
-              style={{left:'31%',top:'64%',width:'38%',height:'9%',touchAction:'manipulation'}} />
-          </section>
+              data-no-fullscreen="true"
+              aria-label="קנה מטוס"
+              className="absolute cursor-pointer rounded-2xl select-none focus:outline-none hover:brightness-110 active:scale-95 border-0 bg-transparent flex items-center justify-center text-cyan-200 font-bold text-lg"
+              style={{ left: '50%', top: '76.5%', transform: 'translate(-50%, -50%)', width: '48%', height: '7.5%', touchAction: 'manipulation' }}
+            >
+              {ownedPlanes.includes(selectedPlane) ? (equippedPlane === selectedPlane ? 'בשימוש כעת (נבחר)' : 'בחר מטוס') : `קנה - ${planes[selectedPlane].price.toLocaleString()} ₪`}
+            </button>
+
+            {/* Bottom Carousel Plane Selection Hotspots */}
+            {planes.map((_, idx) => {
+              const leftPos = 13 + idx * 24;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedPlane(idx)}
+                  data-no-fullscreen="true"
+                  aria-label={`בחר מטוס ${idx + 1}`}
+                  className={`absolute cursor-pointer rounded-2xl select-none focus:outline-none transition border-2 ${
+                    selectedPlane === idx ? 'border-cyan-400 bg-cyan-400/10' : 'border-transparent hover:bg-cyan-400/5'
+                  }`}
+                  style={{ left: `${leftPos}%`, top: '88.5%', transform: 'translate(-50%, -50%)', width: '22%', height: '18%', touchAction: 'manipulation' }}
+                />
+              );
+            })}
+          </>
         )}
+
         {/* ==========================================
             3. UPGRADES WORKSHOP SCREEN (מרכז שדרוגים עם גלילה מלאה)
            ========================================== */}
         {activeTab === 'upgrades' && (
           <>
             <img
-              src="/src/assets/images/wings_upgrades_exact_1791662796095.jpg"
+              src="/src/assets/images/wings_upgrades_exact_new_1791676639538.jpg"
               alt="Upgrades Workshop"
               referrerPolicy="no-referrer"
               className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
