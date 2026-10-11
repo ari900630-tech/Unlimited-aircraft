@@ -210,54 +210,73 @@ export function GameEntryScreen({
             2. AIRCRAFT SHOP SCREEN (חנות מטוסים מדויקת לתמונה)
            ========================================== */}
         {activeTab === 'shop' && (
-          <section aria-label="חנות מטוסים" className="absolute inset-0 overflow-hidden bg-[#17283a]" onPointerDownCapture={handleShopPointerDown} onPointerUpCapture={handleShopPointerUp} onPointerCancelCapture={() => { shopSwipeStart.current = null; }}>
-            {/* The exact shop artwork is stored in this repository, so it does not depend on a third-party image host. */}
-            <img
-              src={shopReferenceImage}
-              alt="חנות המטוסים Wings of Israel"
-              className="absolute inset-0 h-full w-full object-fill select-none pointer-events-none"
-              draggable={false}
-            />
-            {/* Transparent hit areas preserve the reference artwork without adding visible UI on top of it. */}
-            <button type="button" onClick={() => setActiveTab('main')} aria-label="חזור לתפריט"
-              className="absolute z-20 border-0 bg-transparent active:bg-white/10"
-              style={{left:'1%',top:'7%',width:'19%',height:'8%',touchAction:'manipulation'}} />
-            <button type="button" onClick={() => setSelectedPlane((selectedPlane + planes.length - 1) % planes.length)} aria-label="המטוס הקודם"
-              className="absolute z-20 border-0 bg-transparent active:bg-white/10"
-              style={{left:'0%',bottom:'0%',width:'4%',height:'20%',touchAction:'manipulation'}} />
-            <button type="button" onClick={() => setSelectedPlane((selectedPlane + 1) % planes.length)} aria-label="המטוס הבא"
-              className="absolute z-20 border-0 bg-transparent active:bg-white/10"
-              style={{right:'0%',bottom:'0%',width:'4%',height:'20%',touchAction:'manipulation'}} />
-            {[
-              {id:0,left:'3%',width:'25%'},
-              {id:1,left:'29%',width:'25%'},
-              {id:2,left:'55%',width:'25%'},
-              {id:3,left:'80%',width:'20%'},
-            ].map((card) => (
-              <button key={card.id} type="button" onClick={() => setSelectedPlane(card.id)}
-                aria-label={'בחר '+planes[card.id].name}
-                className="absolute z-20 border-0 bg-transparent active:bg-white/10"
-                style={{left:card.left,bottom:'1%',width:card.width,height:'19%',touchAction:'manipulation'}} />
-            ))}
-            <button type="button"
-              onClick={() => {
-                const plane = planes[selectedPlane];
-                if (ownedPlanes.includes(selectedPlane)) {
+          <section aria-label="חנות מטוסים" className="absolute inset-0 overflow-hidden bg-slate-950 text-white" onPointerDownCapture={handleShopPointerDown} onPointerUpCapture={handleShopPointerUp} onPointerCancelCapture={() => { shopSwipeStart.current = null; }}>
+            {/* Temporary low-opacity calibration layer: keep until the real UI is visually checked against the reference. */}
+            <img src={shopReferenceImage} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-fill opacity-[0.12] pointer-events-none select-none" draggable={false} />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0b1a2a]/85 via-[#172b40]/75 to-[#02070e]/95" />
+            <header className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-[4%] py-[3%] border-b border-cyan-200/20 bg-slate-950/65">
+              <button type="button" onClick={() => setActiveTab('main')} aria-label="חזרה לתפריט" className="rounded-lg border border-white/25 bg-slate-800/80 px-3 py-2 text-sm font-bold active:scale-95">‹ חזרה</button>
+              <div className="text-right">
+                <div className="text-[clamp(15px,3.5vw,27px)] font-black tracking-wide text-white">WINGS <span className="text-cyan-300">OF ISRAEL</span></div>
+                <div className="text-[clamp(10px,2vw,14px)] font-bold text-cyan-100/75">חנות מטוסים • בחר את המטוס שלך</div>
+              </div>
+              <div className="rounded-xl border border-amber-300/50 bg-black/60 px-3 py-2 text-left"><div className="text-[10px] text-amber-100">יתרת מטבעות</div><div className="font-black text-amber-300">◈ {coins.toLocaleString('he-IL')}</div></div>
+            </header>
+            <div className="absolute inset-x-[5%] top-[15%] bottom-[25%] z-[2] grid grid-cols-[1fr_1.1fr] gap-[3%]">
+              <div className="flex flex-col justify-center gap-3 rounded-2xl border border-cyan-100/20 bg-slate-950/75 p-[5%] shadow-2xl backdrop-blur-sm">
+                <div className="text-xs font-bold tracking-[0.2em] text-cyan-300">AIRCRAFT SPECIFICATIONS</div>
+                <h2 className="text-[clamp(18px,4vw,34px)] font-black leading-tight">{planes[selectedPlane].name}</h2>
+                <div className="text-xs text-slate-300">מטוס קרב • חיל האוויר הישראלי</div>
+                {[
+                  {label:'מהירות',value:planes[selectedPlane].speed},
+                  {label:'יכולת תמרון',value:planes[selectedPlane].maneuver},
+                  {label:'עוצמת אש',value:planes[selectedPlane].fire},
+                ].map(stat => <div key={stat.label} className="space-y-1"><div className="flex justify-between text-xs"><span>{stat.label}</span><b>{stat.value}/100</b></div><div className="h-2 overflow-hidden rounded-full bg-slate-700"><div className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-sky-200" style={{width:stat.value+'%'}} /></div></div>)}
+                <div className="mt-1 border-t border-white/15 pt-3"><div className="text-xs text-slate-300">{ownedPlanes.includes(selectedPlane) ? 'המטוס בבעלותך' : 'מחיר המטוס'}</div><div className="text-[clamp(20px,4vw,32px)] font-black text-amber-300">{ownedPlanes.includes(selectedPlane) ? 'נרכש' : '◈ '+planes[selectedPlane].price.toLocaleString('he-IL')}</div></div>
+                <button type="button" onClick={() => {
+                  const plane=planes[selectedPlane];
+                  if(ownedPlanes.includes(selectedPlane)){setEquippedPlane(selectedPlane);setActiveTab('main');return;}
+                  if(coins<plane.price){alert('אין מספיק מטבעות. חסרים '+(plane.price-coins).toLocaleString('he-IL')+' מטבעות.');return;}
+                  onCoinsChange(value=>value-plane.price);
+                  setOwnedPlanes(prev=>prev.includes(selectedPlane)?prev:[...prev,selectedPlane]);
                   setEquippedPlane(selectedPlane);
-                  setActiveTab('main');
-                  return;
-                }
-                if (coins < plane.price) {
-                  alert('אין מספיק מטבעות. חסרים ' + (plane.price - coins).toLocaleString('he-IL') + ' מטבעות.');
-                  return;
-                }
-                onCoinsChange((value) => value - plane.price);
-                setOwnedPlanes((prev) => prev.includes(selectedPlane) ? prev : [...prev, selectedPlane]);
-                setEquippedPlane(selectedPlane);
-              }}
-              aria-label={ownedPlanes.includes(selectedPlane) ? 'בחר והפעל מטוס' : 'רכישת מטוס'}
-              className="absolute z-20 border-0 bg-transparent active:bg-white/10"
-              style={{left:'29%',top:'70%',width:'42%',height:'11%',touchAction:'manipulation'}} />
+                }} className="mt-1 rounded-xl border border-cyan-200/60 bg-gradient-to-b from-cyan-400 to-blue-600 px-3 py-3 text-sm font-black text-slate-950 shadow-lg shadow-cyan-950/50 transition active:scale-95">
+                  {ownedPlanes.includes(selectedPlane) ? (equippedPlane===selectedPlane?'המטוס הפעיל שלך ✓':'בחר והפעל מטוס') : 'רכישת מטוס'}
+                </button>
+              </div>
+              <div className="relative flex items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-sky-300/10 via-slate-800/35 to-transparent">
+                <div className="absolute bottom-[8%] h-[28%] w-[120%] -rotate-6 border-t-2 border-cyan-200/30 bg-gradient-to-b from-slate-400/20 to-slate-950/70" />
+                <div className="absolute top-[13%] right-[12%] text-right"><div className="text-xs font-bold tracking-[0.25em] text-white/55">IAF • ISRAEL</div><div className="text-2xl font-black text-white/80">0{selectedPlane+1}</div></div>
+                <div className="relative z-[1] w-full px-[2%] text-center">
+                  <svg viewBox="0 0 640 300" role="img" aria-label="איור מטוס קרב" className="w-full drop-shadow-[0_20px_18px_rgba(0,0,0,0.65)]">
+                    <defs><linearGradient id="m346-body" x1="0" y1="0" x2="0.1" y2="1"><stop offset="0" stopColor="#f8fafc"/><stop offset=".48" stopColor="#aab8c7"/><stop offset="1" stopColor="#4a596b"/></linearGradient><linearGradient id="m346-wing" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#e5edf4"/><stop offset="1" stopColor="#66788c"/></linearGradient></defs>
+                    <g transform="translate(320 150) rotate(-4)">
+                      <path d="M-278 20 L-72 -10 L-18 -26 L-4 -112 L26 -112 L47 -28 L235 -63 L270 -50 L112 8 L56 26 L-45 24 L-220 48 Z" fill="url(#m346-wing)" stroke="#f8fafc" strokeWidth="3"/>
+                      <path d="M-40 -35 L-3 -130 L17 -136 L25 -36 L-4 45 L-26 48 Z" fill="#d9e2ec" stroke="#f8fafc" strokeWidth="2"/>
+                      <path d="M-20 -115 L-4 -154 L10 -157 L20 -117 L9 -92 L-8 -92 Z" fill="#1f3448"/>
+                      <path d="M-295 20 Q-150 -7 -24 -18 L210 -52 L273 -48 L215 -25 L38 17 L-20 39 L-242 58 Z" fill="url(#m346-body)" stroke="#f8fafc" strokeWidth="2"/>
+                      <path d="M-160 3 L-42 -11 L14 -19 L0 8 L-151 32 Z" fill="#c62828"/>
+                      <path d="M-50 -10 L-6 -22 L17 -17 L-10 3 L-60 12 Z" fill="#fff"/>
+                      <path d="M-10 -18 L30 -24 L58 -24 L18 -7 L-12 1 Z" fill="#c62828"/>
+                      <path d="M-24 -21 L-5 -70 L10 -73 L20 -23 Z" fill="#263c52" stroke="#dbeafe" strokeWidth="2"/>
+                      <path d="M-7 -65 L7 -67 L12 -29 L-13 -26 Z" fill="#55b8df" opacity=".8"/>
+                      <path d="M-254 42 L-210 34 L-223 49 Z" fill="#c62828"/><path d="M-242 41 L-224 38 L-230 45 Z" fill="#fff"/>
+                      <circle cx="74" cy="-20" r="5" fill="#c62828"/><path d="M-85 25 L-60 21 L-71 30 Z" fill="#334155"/>
+                    </g>
+                  </svg>
+                  <div className="mt-[-1%] text-xs font-black tracking-[0.25em] text-white/60">M-346 • לביא</div>
+                </div>
+              </div>
+            </div>
+            <div className="absolute inset-x-0 bottom-0 z-10 border-t border-cyan-200/25 bg-slate-950/90 px-[3%] pb-[3%] pt-[2%]">
+              <div className="mb-2 flex items-center justify-between"><span className="text-xs font-bold text-cyan-200">צי המטוסים</span><span className="text-[10px] text-slate-400">החלק כדי לראות עוד מטוסים ←</span></div>
+              <div className="flex gap-2 overflow-x-auto pb-1" style={{touchAction:'pan-x'}}>
+                {planes.map((p,idx)=><button key={p.id} type="button" onClick={()=>setSelectedPlane(p.id)} className={'min-w-[24%] flex-1 rounded-xl border p-2 text-right transition active:scale-95 '+(selectedPlane===p.id?'border-cyan-300 bg-cyan-500/20 ring-1 ring-cyan-300/50':'border-white/15 bg-slate-800/80')} style={{touchAction:'manipulation'}}>
+                  <div className="mb-1 flex items-center justify-between"><span className="text-[10px] text-slate-400">0{idx+1}</span><span className="text-[10px]">{ownedPlanes.includes(p.id)?'✓ בבעלות':'🔒'}</span></div>
+                  <div className="text-[clamp(10px,2.5vw,14px)] font-black leading-tight">{p.name}</div><div className="mt-1 text-[10px] font-bold text-amber-300">{ownedPlanes.includes(p.id)?'נרכש':p.price.toLocaleString('he-IL')+' ◈'}</div>
+                </button>)}
+              </div>
+            </div>
           </section>
         )}
 
