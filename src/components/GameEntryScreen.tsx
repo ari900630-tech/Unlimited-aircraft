@@ -269,11 +269,11 @@ export function GameEntryScreen({
               </div>
             </div>
             <div className="absolute inset-x-0 bottom-0 z-10 border-t border-cyan-200/25 bg-slate-950/90 px-[3%] pb-[3%] pt-[2%]">
-              <div className="mb-2 flex items-center justify-between"><span className="text-xs font-bold text-cyan-200">צי המטוסים</span><span className="text-[10px] text-slate-400">החלק כדי לראות עוד מטוסים ←</span></div>
-              <div className="flex gap-2 overflow-x-auto pb-1" style={{touchAction:'pan-x'}}>
-                {planes.map((p,idx)=><button key={p.id} type="button" onClick={()=>setSelectedPlane(p.id)} className={'min-w-[24%] flex-1 rounded-xl border p-2 text-right transition active:scale-95 '+(selectedPlane===p.id?'border-cyan-300 bg-cyan-500/20 ring-1 ring-cyan-300/50':'border-white/15 bg-slate-800/80')} style={{touchAction:'manipulation'}}>
+              <div className="mb-2 flex items-center justify-between"><span className="text-xs font-bold text-cyan-200">צי המטוסים</span><span className="text-[10px] text-slate-400">החלק או גלול לצדדים כדי לראות עוד מטוסים ←</span></div>
+              <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-cyan-500/50 scrollbar-track-slate-900" style={{touchAction:'pan-x', WebkitOverflowScrolling: 'touch'}}>
+                {planes.map((p,idx)=><button key={p.id} type="button" onClick={()=>setSelectedPlane(p.id)} className={'min-w-[140px] sm:min-w-[160px] flex-shrink-0 rounded-xl border p-2.5 text-right transition active:scale-95 '+(selectedPlane===p.id?'border-cyan-300 bg-cyan-500/20 ring-1 ring-cyan-300/50':'border-white/15 bg-slate-800/80')} style={{touchAction:'manipulation'}}>
                   <div className="mb-1 flex items-center justify-between"><span className="text-[10px] text-slate-400">0{idx+1}</span><span className="text-[10px]">{ownedPlanes.includes(p.id)?'✓ בבעלות':'🔒'}</span></div>
-                  <div className="text-[clamp(10px,2.5vw,14px)] font-black leading-tight">{p.name}</div><div className="mt-1 text-[10px] font-bold text-amber-300">{ownedPlanes.includes(p.id)?'נרכש':p.price.toLocaleString('he-IL')+' ◈'}</div>
+                  <div className="text-[clamp(11px,2.5vw,14px)] font-black leading-tight">{p.name}</div><div className="mt-1 text-[10px] font-bold text-amber-300">{ownedPlanes.includes(p.id)?'נרכש':p.price.toLocaleString('he-IL')+' ◈'}</div>
                 </button>)}
               </div>
             </div>
