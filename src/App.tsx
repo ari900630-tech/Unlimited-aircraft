@@ -2082,7 +2082,13 @@ export default function App() {
       {/* In-Flight Mobile App Top Bar (Active when in flight) */}
       {!isEntryScreenOpen && (
         <>
-          {/* Top Center: score, kills, and the same persistent shop currency */}
+          {/* Top Left: currency badge matching the entry-screen balance; no kill means 0 earned coins */}
+          <div className="absolute top-3 left-3 pointer-events-none z-20 rounded-xl border border-amber-300/50 bg-black/60 px-3 py-2 text-left shadow-md backdrop-blur-md">
+            <div className="text-[10px] text-amber-100">יתרת מטבעות</div>
+            <div className="font-black text-amber-300">◈ {(aerialHits > 0 ? coins : 0).toLocaleString('he-IL')}</div>
+          </div>
+
+          {/* Top Center: score and kills */}
           <div className="absolute top-3 left-1/2 -translate-x-1/2 pointer-events-none z-20 flex max-w-[58vw] items-center gap-2 sm:gap-3 px-2.5 sm:px-3.5 py-1.5 rounded-full bg-slate-950/90 backdrop-blur-md border border-slate-700 text-[10px] sm:text-xs font-mono shadow-md whitespace-nowrap">
             <div className="flex items-center gap-1 text-amber-400">
               <Trophy className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
@@ -2092,11 +2098,6 @@ export default function App() {
             <div className="flex items-center gap-1 text-rose-400">
               <Crosshair className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span>{aerialHits} הפלות</span>
-            </div>
-            <span className="text-slate-600">|</span>
-            <div className="flex items-center gap-1 text-emerald-300">
-              <Coins className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              <span>₪ {coins.toLocaleString()}</span>
             </div>
           </div>
 
