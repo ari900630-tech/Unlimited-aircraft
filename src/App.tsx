@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Canvas, useFrame, useThree, useLoader } from '@react-three/fiber';
 import { Sky, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { Crosshair, ShieldCheck, Wrench, AlertTriangle, RefreshCw, Menu, Trophy, Coins } from 'lucide-react';
@@ -367,6 +367,43 @@ function VirtualJoystick({
 // 3D Airplane Model: High-Fidelity Tactical Fighter (Ace Dogfighter)
 // Streamlined aerodynamic metal fuselage, canopy, spinner, invasion stripes, cannons
 // ==========================================
+// ==========================================
+// 2D Aircraft Image Sprites — aircraft remain movable, but are no longer 3D models.
+// The inline SVGs are image textures with transparent backgrounds.
+// ==========================================
+const PLAYER_AIRCRAFT_IMAGE = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+ <defs>
+  <linearGradient id="body" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".48" stop-color="#94a3b8"/><stop offset="1" stop-color="#334155"/></linearGradient>
+  <linearGradient id="wing" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e2e8f0"/><stop offset="1" stop-color="#64748b"/></linearGradient>
+  <filter id="shadow"><feGaussianBlur stdDeviation="5"/></filter>
+ </defs>
+ <path d="M256 28 L274 140 L447 226 L449 257 L280 226 L293 352 L348 405 L348 432 L256 411 L164 432 L164 405 L219 352 L232 226 L63 257 L65 226 L238 140 Z" fill="#0f172a" opacity=".28" transform="translate(0 9)" filter="url(#shadow)"/>
+ <path d="M256 24 L275 140 L447 226 L449 257 L280 226 L294 354 L349 405 L349 432 L256 411 L163 432 L163 405 L218 354 L232 226 L63 257 L65 226 L237 140 Z" fill="url(#wing)" stroke="#f8fafc" stroke-width="5" stroke-linejoin="round"/>
+ <path d="M256 24 L270 145 L267 358 L256 411 L245 358 L242 145 Z" fill="url(#body)" stroke="#e2e8f0" stroke-width="3"/>
+ <path d="M256 71 L263 145 L256 164 L249 145 Z" fill="#38bdf8"/>
+ <path d="M103 232 L226 202 L224 221 L82 249 Z M409 232 L286 202 L288 221 L430 249 Z" fill="#2563eb"/>
+ <path d="M225 338 L174 412 L205 404 L244 362 Z M287 338 L338 412 L307 404 L268 362 Z" fill="#1d4ed8"/>
+ <path d="M256 32 L263 121 L256 141 L249 121 Z" fill="#ffffff" opacity=".95"/>
+ <circle cx="256" cy="179" r="17" fill="#0c4a6e" stroke="#7dd3fc" stroke-width="5"/>
+ <path d="M246 178 Q256 161 266 178 L264 195 L248 195 Z" fill="#0f172a"/>
+ <path d="M181 411 L205 403 M331 411 L307 403" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+</svg>`);
+const ENEMY_AIRCRAFT_IMAGE = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+ <defs>
+  <linearGradient id="body" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fecaca"/><stop offset=".45" stop-color="#b91c1c"/><stop offset="1" stop-color="#450a0a"/></linearGradient>
+  <linearGradient id="wing" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ef4444"/><stop offset="1" stop-color="#7f1d1d"/></linearGradient>
+ </defs>
+ <path d="M256 24 L275 140 L447 226 L449 257 L280 226 L294 354 L349 405 L349 432 L256 411 L163 432 L163 405 L218 354 L232 226 L63 257 L65 226 L237 140 Z" fill="url(#wing)" stroke="#fecaca" stroke-width="5" stroke-linejoin="round"/>
+ <path d="M256 24 L270 145 L267 358 L256 411 L245 358 L242 145 Z" fill="url(#body)" stroke="#fee2e2" stroke-width="3"/>
+ <path d="M103 232 L226 202 L224 221 L82 249 Z M409 232 L286 202 L288 221 L430 249 Z" fill="#fbbf24"/>
+ <path d="M225 338 L174 412 L205 404 L244 362 Z M287 338 L338 412 L307 404 L268 362 Z" fill="#991b1b"/>
+ <path d="M256 32 L263 121 L256 141 L249 121 Z" fill="#fff7ed"/>
+ <circle cx="256" cy="179" r="17" fill="#1e293b" stroke="#fca5a5" stroke-width="5"/>
+ <path d="M246 178 Q256 161 266 178 L264 195 L248 195 Z" fill="#020617"/>
+</svg>`);
+
 const DetailedAirplane = React.forwardRef<
   THREE.Group,
   {
@@ -378,321 +415,36 @@ const DetailedAirplane = React.forwardRef<
     isShooting?: boolean;
     isFlying?: boolean;
   }
->(
-  (
-    {
-      propellerRef,
-      color = '#E11D48',
-      wingtipColor = '#BE123C',
-      propAngle = 0,
-      isHit = false,
-      isShooting = false,
-      isFlying = false,
-    },
-    ref
-  ) => {
-    return (
-      <group ref={ref}>
-        {/* Aerodynamic Fuselage Main Body */}
-        <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.26, 0.38, 3.4, 12]} />
-          <meshStandardMaterial color={color} roughness={0.25} metalness={0.65} />
-        </mesh>
-
-        {/* Engine Cowling Nose Taper */}
-        <mesh position={[0, 0, -1.8]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.2, 0.26, 0.6, 12]} />
-          <meshStandardMaterial color="#0F172A" roughness={0.2} metalness={0.85} />
-        </mesh>
-
-        {/* Aerodynamic Metallic Nose Spinner Cone */}
-        <mesh position={[0, 0, -2.18]} rotation={[-Math.PI / 2, 0, 0]}>
-          <coneGeometry args={[0.2, 0.42, 12]} />
-          <meshStandardMaterial color="#E2E8F0" roughness={0.15} metalness={0.95} />
-        </mesh>
-
-        {/* Bubble Cockpit Canopy (Reflective Avionics Glass) */}
-        <mesh position={[0, 0.38, -0.25]}>
-          <sphereGeometry args={[0.34, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
-          <meshStandardMaterial
-            color="#38BDF8"
-            roughness={0.1}
-            metalness={0.65}
-            transparent
-            opacity={0.75}
-          />
-        </mesh>
-
-        {/* Cockpit Canopy Frame Arc */}
-        <mesh position={[0, 0.38, -0.25]}>
-          <torusGeometry args={[0.33, 0.02, 8, 20, Math.PI]} />
-          <meshStandardMaterial color="#0F172A" metalness={0.8} roughness={0.3} />
-        </mesh>
-
-        {/* Pilot Helmet & Aviator Goggles */}
-        <group position={[0, 0.34, -0.25]}>
-          <mesh>
-            <sphereGeometry args={[0.16, 12, 12]} />
-            <meshStandardMaterial color="#FBBF24" roughness={0.4} />
-          </mesh>
-          <mesh position={[0, 0.04, -0.14]}>
-            <boxGeometry args={[0.18, 0.06, 0.04]} />
-            <meshStandardMaterial color="#0F172A" roughness={0.1} metalness={0.9} />
-          </mesh>
-        </group>
-
-        {/* Dual Engine Exhaust Stubs along Cowling */}
-        {[-0.24, 0.24].map((x) => (
-          <group key={x} position={[x, 0.05, -1.5]}>
-            {[-0.2, -0.05, 0.1].map((z, idx) => (
-              <mesh key={idx} position={[0, 0, z]} rotation={[0, 0, x > 0 ? 0.4 : -0.4]}>
-                <cylinderGeometry args={[0.03, 0.03, 0.12, 6]} />
-                <meshStandardMaterial color="#334155" metalness={0.9} roughness={0.3} />
-              </mesh>
-            ))}
-          </group>
-        ))}
-
-        {/* Main Swept Monoplane Wing */}
-        <group position={[0, 0.02, -0.2]}>
-          <mesh>
-            <boxGeometry args={[5.2, 0.08, 1.1]} />
-            <meshStandardMaterial color={color} roughness={0.3} metalness={0.5} />
-          </mesh>
-
-          {/* White Tactical Invasion Wing Stripes */}
-          {[-1.6, 1.6].map((x) => (
-            <mesh key={x} position={[x, 0.045, 0]}>
-              <boxGeometry args={[0.35, 0.005, 1.08]} />
-              <meshStandardMaterial color="#FFFFFF" roughness={0.4} />
-            </mesh>
-          ))}
-
-          {/* Wingtips */}
-          <mesh position={[-2.65, 0, 0]}>
-            <boxGeometry args={[0.2, 0.08, 1.0]} />
-            <meshStandardMaterial color={wingtipColor} />
-          </mesh>
-          <mesh position={[2.65, 0, 0]}>
-            <boxGeometry args={[0.2, 0.08, 1.0]} />
-            <meshStandardMaterial color={wingtipColor} />
-          </mesh>
-
-          {/* Port Navigation Light (Red on Left) */}
-          <mesh position={[-2.75, 0.02, 0]}>
-            <sphereGeometry args={[0.04, 6, 6]} />
-            <meshStandardMaterial color="#EF4444" emissive="#EF4444" emissiveIntensity={1.5} />
-          </mesh>
-          {/* Starboard Navigation Light (Green on Right) */}
-          <mesh position={[2.75, 0.02, 0]}>
-            <sphereGeometry args={[0.04, 6, 6]} />
-            <meshStandardMaterial color="#10B981" emissive="#10B981" emissiveIntensity={1.5} />
-          </mesh>
-
-          {/* Under-Wing Rifle / Machine Gun Mounts ("מתחת למטוס") */}
-          {[-0.65, 0.65].map((x) => (
-            <group key={x} position={[x, -0.22, -0.1]}>
-              {/* Pylon Mounting Bracket under wing */}
-              <mesh position={[0, 0.08, 0]}>
-                <boxGeometry args={[0.05, 0.12, 0.55]} />
-                <meshStandardMaterial color="#0F172A" metalness={0.8} />
-              </mesh>
-              {/* Slender Military Rifle Barrel */}
-              <mesh rotation={[Math.PI / 2, 0, 0]}>
-                <cylinderGeometry args={[0.024, 0.024, 0.82, 8]} />
-                <meshStandardMaterial color="#1E293B" metalness={0.92} roughness={0.2} />
-              </mesh>
-              {/* Pointed Muzzle Tip */}
-              <mesh position={[0, 0, -0.45]} rotation={[Math.PI / 2, 0, 0]}>
-                <cylinderGeometry args={[0.016, 0.022, 0.16, 8]} />
-                <meshStandardMaterial color="#475569" metalness={0.95} roughness={0.15} />
-              </mesh>
-            </group>
-          ))}
-        </group>
-
-        {/* Tail Fin & Rudder at Back (+Z) */}
-        <mesh position={[0, 0.58, 1.5]} rotation={[0.22, 0, 0]}>
-          <boxGeometry args={[0.06, 0.85, 0.7]} />
-          <meshStandardMaterial color={wingtipColor} metalness={0.5} roughness={0.3} />
-        </mesh>
-        {/* Tail Navigation Light (White) */}
-        <mesh position={[0, 0.95, 1.7]}>
-          <sphereGeometry args={[0.035, 6, 6]} />
-          <meshStandardMaterial color="#FFFFFF" emissive="#FFFFFF" emissiveIntensity={1.5} />
-        </mesh>
-
-        {/* Horizontal Tail Stabilizers */}
-        <mesh position={[0, 0.16, 1.55]}>
-          <boxGeometry args={[1.8, 0.06, 0.55]} />
-          <meshStandardMaterial color="#E2E8F0" roughness={0.3} />
-        </mesh>
-
-        {/* Retractable Landing Gear */}
-        <group position={[0, -0.38, -0.5]}>
-          {[-0.65, 0.65].map((x) => (
-            <group key={x} position={[x, 0, 0]}>
-              <mesh rotation={[0, 0, x > 0 ? 0.25 : -0.25]}>
-                <cylinderGeometry args={[0.025, 0.025, 0.44, 6]} />
-                <meshStandardMaterial color="#334155" metalness={0.8} />
-              </mesh>
-              <mesh position={[0, -0.22, 0]} rotation={[0, 0, Math.PI / 2]}>
-                <cylinderGeometry args={[0.13, 0.13, 0.08, 12]} />
-                <meshStandardMaterial color="#0F172A" roughness={0.8} />
-              </mesh>
-            </group>
-          ))}
-        </group>
-
-        {/* Propeller Hub & Blades / In-Flight Motion Disc */}
-        <group position={[0, 0, -2.1]} ref={propellerRef}>
-          {isFlying ? (
-            /* High-Speed Motion-Blurred Propeller Disc */
-            <group rotation={[0, 0, propAngle]}>
-              <mesh position={[0, 0, -0.02]}>
-                <ringGeometry args={[0.2, 1.45, 24]} />
-                <meshBasicMaterial color="#94A3B8" transparent opacity={0.35} side={THREE.DoubleSide} />
-              </mesh>
-              {/* Outer Golden Tip Ring */}
-              <mesh position={[0, 0, -0.02]}>
-                <ringGeometry args={[1.35, 1.45, 24]} />
-                <meshBasicMaterial color="#FBBF24" transparent opacity={0.6} side={THREE.DoubleSide} />
-              </mesh>
-              {/* Spinning Blade Streaks */}
-              {[0, (Math.PI * 2) / 3, (Math.PI * 4) / 3].map((angle, idx) => (
-                <mesh key={idx} rotation={[0, 0, angle]}>
-                  <boxGeometry args={[0.1, 2.7, 0.02]} />
-                  <meshBasicMaterial color="#334155" transparent opacity={0.4} />
-                </mesh>
-              ))}
-            </group>
-          ) : (
-            /* Parked 3-Blade Metal Propeller */
-            <group rotation={[0, 0, propAngle]}>
-              {[0, (Math.PI * 2) / 3, (Math.PI * 4) / 3].map((angle, idx) => (
-                <group key={idx} rotation={[0, 0, angle]}>
-                  <mesh position={[0, 0.72, 0]}>
-                    <boxGeometry args={[0.12, 1.35, 0.02]} />
-                    <meshStandardMaterial color="#0F172A" metalness={0.8} />
-                  </mesh>
-                  {/* Yellow Blade Tip */}
-                  <mesh position={[0, 1.35, 0]}>
-                    <boxGeometry args={[0.12, 0.18, 0.025]} />
-                    <meshStandardMaterial color="#FBBF24" />
-                  </mesh>
-                </group>
-              ))}
-            </group>
-          )}
-        </group>
-
-        {/* Muzzle Flash Flares when firing rifles (Positioned under the wings) */}
-        {isShooting && (
-          <>
-            {[-0.65, 0.65].map((x) => (
-              <group key={x} position={[x, -0.22, -0.65]}>
-                <mesh>
-                  <sphereGeometry args={[0.09, 6, 6]} />
-                  <meshBasicMaterial color="#FEF08A" />
-                </mesh>
-                <mesh position={[0, 0, -0.14]} rotation={[Math.PI / 2, 0, 0]}>
-                  <coneGeometry args={[0.06, 0.32, 6]} />
-                  <meshBasicMaterial color="#F97316" transparent opacity={0.9} />
-                </mesh>
-              </group>
-            ))}
-          </>
-        )}
-
-        {/* Combat Damage Smoke & Sparks */}
-        {isHit && (
-          <group position={[0, 0.6, 0]}>
-            <mesh>
-              <sphereGeometry args={[0.45, 10, 10]} />
-              <meshStandardMaterial color="#F97316" emissive="#EF4444" emissiveIntensity={2.5} />
-            </mesh>
-            <mesh position={[0.2, 0.35, 0.3]}>
-              <sphereGeometry args={[0.35, 8, 8]} />
-              <meshStandardMaterial color="#0F172A" transparent opacity={0.85} />
-            </mesh>
-            <mesh position={[-0.2, 0.5, 0.6]}>
-              <sphereGeometry args={[0.4, 8, 8]} />
-              <meshStandardMaterial color="#1E293B" transparent opacity={0.7} />
-            </mesh>
-          </group>
-        )}
-      </group>
-    );
-  }
-);
+>(({ propellerRef: _propellerRef }, ref) => {
+  const texture = useLoader(THREE.TextureLoader, PLAYER_AIRCRAFT_IMAGE);
+  return (
+    <group ref={ref}>
+      <sprite scale={[5.6, 5.6, 1]}>
+        <spriteMaterial map={texture} transparent alphaTest={0.02} depthWrite={false} />
+      </sprite>
+    </group>
+  );
+});
 DetailedAirplane.displayName = 'DetailedAirplane';
 
-// ==========================================
-// Ultra-Efficient Low-Poly Combat Fighter for AI Patrol Bandits
-// High aesthetic fidelity with only 7 draw calls and zero overhead
-// ==========================================
 const AIAircraftModel = React.memo(function AIAircraftModel({
-  color,
-  wingtipColor,
-  propAngle = 0,
+  color: _color,
+  wingtipColor: _wingtipColor,
+  propAngle: _propAngle = 0,
 }: {
   color: string;
   wingtipColor: string;
   propAngle?: number;
 }) {
+  const texture = useLoader(THREE.TextureLoader, ENEMY_AIRCRAFT_IMAGE);
   return (
-    <group>
-      {/* Aerodynamic Fuselage */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.26, 0.38, 3.2, 8]} />
-        <meshStandardMaterial color={color} roughness={0.3} metalness={0.6} />
-      </mesh>
-      {/* Nose Spinner Cone */}
-      <mesh position={[0, 0, -1.8]} rotation={[-Math.PI / 2, 0, 0]}>
-        <coneGeometry args={[0.22, 0.45, 8]} />
-        <meshStandardMaterial color="#E2E8F0" metalness={0.8} />
-      </mesh>
-      {/* Bubble Canopy */}
-      <mesh position={[0, 0.32, -0.2]}>
-        <sphereGeometry args={[0.3, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <meshStandardMaterial color="#38BDF8" roughness={0.1} metalness={0.5} transparent opacity={0.8} />
-      </mesh>
-      {/* Swept Main Wings */}
-      <mesh position={[0, 0.02, -0.2]}>
-        <boxGeometry args={[4.8, 0.07, 1.0]} />
-        <meshStandardMaterial color={color} roughness={0.3} metalness={0.5} />
-      </mesh>
-      {/* Left Wingtip */}
-      <mesh position={[-2.45, 0.02, -0.2]}>
-        <boxGeometry args={[0.2, 0.08, 0.9]} />
-        <meshStandardMaterial color={wingtipColor} />
-      </mesh>
-      {/* Right Wingtip */}
-      <mesh position={[2.45, 0.02, -0.2]}>
-        <boxGeometry args={[0.2, 0.08, 0.9]} />
-        <meshStandardMaterial color={wingtipColor} />
-      </mesh>
-      {/* Vertical Stabilizer Tail */}
-      <mesh position={[0, 0.45, 1.3]}>
-        <boxGeometry args={[0.06, 0.8, 0.6]} />
-        <meshStandardMaterial color={wingtipColor} />
-      </mesh>
-      {/* Horizontal Elevator Stabilizer */}
-      <mesh position={[0, 0.05, 1.3]}>
-        <boxGeometry args={[1.6, 0.05, 0.4]} />
-        <meshStandardMaterial color={color} />
-      </mesh>
-      {/* Propeller Blade Disc */}
-      <group position={[0, 0, -2.05]} rotation={[0, 0, propAngle]}>
-        <mesh>
-          <boxGeometry args={[0.08, 1.3, 0.02]} />
-          <meshBasicMaterial color="#FBBF24" />
-        </mesh>
-      </group>
-    </group>
+    <sprite scale={[4.8, 4.8, 1]}>
+      <spriteMaterial map={texture} transparent alphaTest={0.02} depthWrite={false} />
+    </sprite>
   );
 });
 
+// ==========================================
 // ==========================================
 // 3D Airfield Military Base Environment & Scenery
 // Runway with tarmac markings, threshold keys, approach lights, radar tower, hangars
