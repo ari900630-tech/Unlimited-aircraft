@@ -665,19 +665,52 @@ const DetailedAirplane = React.forwardRef<
 DetailedAirplane.displayName = 'DetailedAirplane';
 
 const AIAircraftModel = React.memo(function AIAircraftModel({
-  color: _color,
-  wingtipColor: _wingtipColor,
-  propAngle: _propAngle = 0,
+  color,
+  wingtipColor,
+  propAngle = 0,
 }: {
   color: string;
   wingtipColor: string;
   propAngle?: number;
 }) {
-  const texture = useLoader(THREE.TextureLoader, ENEMY_AIRCRAFT_IMAGE);
+  // Use actual Three.js geometry instead of an SVG sprite. This avoids invisible
+  // texture-loading failures and keeps the enemy aircraft visible from all angles.
   return (
-    <sprite scale={[7.2, 7.2, 1]}>
-      <spriteMaterial map={texture} transparent alphaTest={0.02} depthWrite={false} />
-    </sprite>
+    <group scale={1.45}>
+      {/* Fuselage: nose points toward -Z, matching the player's flight direction */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.22, 0.34, 3.2, 10]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.22} metalness={0.35} roughness={0.38} />
+      </mesh>
+      <mesh position={[0, 0.12, -1.8]} rotation={[-Math.PI / 2, 0, 0]}>
+        <coneGeometry args={[0.22, 0.9, 10]} />
+        <meshStandardMaterial color="#F8FAFC" emissive="#7F1D1D" emissiveIntensity={0.25} />
+      </mesh>
+      {/* Wide wings and rear stabilizers make the silhouette easy to see */}
+      <mesh position={[0, 0, -0.05]}>
+        <boxGeometry args={[5.6, 0.14, 1.05]} />
+        <meshStandardMaterial color={wingtipColor} emissive={wingtipColor} emissiveIntensity={0.25} />
+      </mesh>
+      <mesh position={[0, 0.02, 1.18]}>
+        <boxGeometry args={[2.2, 0.12, 0.62]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.25} />
+      </mesh>
+      <mesh position={[0, 0.42, 1.05]}>
+        <boxGeometry args={[0.14, 0.82, 0.55]} />
+        <meshStandardMaterial color={wingtipColor} emissive={wingtipColor} emissiveIntensity={0.3} />
+      </mesh>
+      <mesh position={[0, 0.3, -0.48]}>
+        <sphereGeometry args={[0.28, 10, 8]} />
+        <meshBasicMaterial color="#FDE68A" />
+      </mesh>
+      {/* Bright red wingtip markers improve contrast at a distance */}
+      {[-2.75, 2.75].map((x) => (
+        <mesh key={x} position={[x, 0.1, -0.05]}>
+          <boxGeometry args={[0.22, 0.18, 0.28]} />
+          <meshBasicMaterial color="#FACC15" />
+        </mesh>
+      ))}
+    </group>
   );
 });
 
@@ -1053,13 +1086,13 @@ function FlightScene({
     {
       id: 2,
       callsign: 'BANDIT-02',
-      position: new THREE.Vector3(-12, 14, -42),
+      position: new THREE.Vector3(-12, 4.5, -42),
       rotation: new THREE.Euler(0, Math.PI * 0.3, 0.2, 'YXZ'),
       center: new THREE.Vector2(-12, -56),
       radius: 18,
       angle: Math.PI * 1.5,
       speed: 0.32,
-      altitude: 14,
+      altitude: 4.5,
       color: '#D97706', // Desert Viper
       wingColor: '#B45309',
       wobble: 0,
@@ -1076,13 +1109,13 @@ function FlightScene({
     {
       id: 3,
       callsign: 'BANDIT-03',
-      position: new THREE.Vector3(15, 17, -63),
+      position: new THREE.Vector3(15, 5.5, -63),
       rotation: new THREE.Euler(0, -Math.PI * 0.4, 0.2, 'YXZ'),
       center: new THREE.Vector2(15, -80),
       radius: 22,
       angle: Math.PI * 1.5,
       speed: 0.28,
-      altitude: 17,
+      altitude: 5.5,
       color: '#475569', // Ghost Slate
       wingColor: '#334155',
       wobble: 0,
@@ -1099,13 +1132,13 @@ function FlightScene({
     {
       id: 4,
       callsign: 'BANDIT-04',
-      position: new THREE.Vector3(-20, 20, -83),
+      position: new THREE.Vector3(-20, 6.5, -83),
       rotation: new THREE.Euler(0, Math.PI * 0.7, 0.2, 'YXZ'),
       center: new THREE.Vector2(-20, -106),
       radius: 28,
       angle: Math.PI * 1.5,
       speed: 0.24,
-      altitude: 20,
+      altitude: 6.5,
       color: '#991B1B', // Crimson Baron
       wingColor: '#7F1D1D',
       wobble: 0,
