@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { User } from 'lucide-react';
 import shopReferenceImage from '../assets/images/wings_shop_exact_new_1791676618855.jpg';
+import upgradesFallbackImage from '../assets/images/wings_upgrades_exact_new_1791676639538.jpg';
 
 
 interface GameEntryScreenProps {
@@ -240,7 +241,8 @@ export function GameEntryScreen({
         {activeTab === 'upgrades' && (
           <>
             <img
-              src="/src/assets/images/wings_upgrades_exact_new_1791676639538.jpg"
+              src="https://i.postimg.cc/52v5PThX/589ae43a-1f90-4f27-a1ac-fcc14f9525a4.jpg"
+              onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = upgradesFallbackImage; }}
               alt="Upgrades Workshop"
               referrerPolicy="no-referrer"
               className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
