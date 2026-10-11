@@ -1139,8 +1139,8 @@ function FlightScene({
       angle: Math.PI * 1.5,
       speed: 0.24,
       altitude: 6.5,
-      color: '#991B1B', // Crimson Baron
-      wingColor: '#7F1D1D',
+      color: '#0F766E', // Teal Specter — visually distinct from the player's aircraft
+      wingColor: '#14B8A6',
       wobble: 0,
       isHit: false,
       hitTimer: 0,
