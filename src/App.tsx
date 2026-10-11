@@ -1601,6 +1601,38 @@ export default function App() {
   const [isSplashScreenOpen, setIsSplashScreenOpen] = useState(true);
   const [isFlying, setIsFlying] = useState(false);
   const [isEntryScreenOpen, setIsEntryScreenOpen] = useState(true);
+  // Touch-drag steering: drag across the flight view to steer the 2D aircraft image.
+  const screenDragPointerId = useRef<number | null>(null);
+  const screenDragOrigin = useRef({ x: 0, y: 0 });
+  const handleFlightDragStart = (e: React.PointerEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (isEntryScreenOpen || target.closest('[data-no-fullscreen],button,[role="button"]')) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    screenDragPointerId.current = e.pointerId;
+    screenDragOrigin.current = { x: e.clientX, y: e.clientY };
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch {}
+    if (!isFlying) {
+      setIsFlying(true);
+      setIsEntryScreenOpen(false);
+      sfx.startEngine();
+    }
+  };
+  const handleFlightDragMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (screenDragPointerId.current !== e.pointerId || isEntryScreenOpen) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const dx = e.clientX - screenDragOrigin.current.x;
+    const dy = e.clientY - screenDragOrigin.current.y;
+    // A small finger movement gives a clear, bounded steering input.
+    turnInputRef.current = Math.max(-1, Math.min(1, dx / Math.max(80, rect.width * 0.22)));
+    pitchInputRef.current = Math.max(-1, Math.min(1, -dy / Math.max(80, rect.height * 0.22)));
+  };
+  const handleFlightDragEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (screenDragPointerId.current !== e.pointerId) return;
+    screenDragPointerId.current = null;
+    turnInputRef.current = 0;
+    pitchInputRef.current = 0;
+    try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {}
+  };
   const [activePlaneId, setActivePlaneId] = useState(0);
   const handlePlaneSelected = React.useCallback((planeId: number) => setActivePlaneId(planeId), []);
   const planePaint = [
@@ -1740,7 +1772,14 @@ export default function App() {
   }, [isFlying, isEntryScreenOpen]);
 
   return (
-    <div className="h-screen h-[100dvh] w-full relative bg-slate-950 overflow-hidden select-none font-sans">
+    <div
+      className="h-screen h-[100dvh] w-full relative bg-slate-950 overflow-hidden select-none font-sans"
+      onPointerDownCapture={handleFlightDragStart}
+      onPointerMoveCapture={handleFlightDragMove}
+      onPointerUpCapture={handleFlightDragEnd}
+      onPointerCancelCapture={handleFlightDragEnd}
+      style={{ touchAction: 'none' }}
+    >
       {/* 3D Canvas Viewport - High-Performance 60FPS Mobile Optimized */}
       <FlightErrorBoundary>
         <Canvas
